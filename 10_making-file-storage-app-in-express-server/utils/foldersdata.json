@@ -1,0 +1,22 @@
+{
+    "dirs": [
+        {
+            "id": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
+            "name": "root",
+            "parent": "",
+            "files": [],
+            "directories": [
+                "6e7ec219-2d79-4c57-965e-0f6c6de81484"
+            ]
+        },
+        {
+            "id": "6e7ec219-2d79-4c57-965e-0f6c6de81484",
+            "name": "new_dir",
+            "parent": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
+            "files": [
+                "dee16301-69dd-4a83-83c3-9a851167e4e8"
+            ],
+            "directories": []
+        }
+    ]
+}

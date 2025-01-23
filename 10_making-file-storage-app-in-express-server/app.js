@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use(express.static("storage"));
 
-app.use('/files', fileRoutes);
+app.use('/file', fileRoutes);
 app.use('/directory', dirRoutes);
 
 
