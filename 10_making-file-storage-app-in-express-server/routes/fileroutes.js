@@ -5,6 +5,7 @@ import multer from 'multer';
 import { createWriteStream, write } from "fs";
 import fileData from "../utils/filesdata.json" with {type: "json"};
 import dirData from '../utils/foldersdata.json' with {type: "json"};
+import { dir } from "console";
 
 const router = express.Router();
 
@@ -79,9 +80,7 @@ router.delete("/:id", async (req, res, next) => {
 
         fileDir.files = fileDir.files.filter((fileId) => fileId !== id);
 
-        dirData.dirs.map((dir) => {
-            dir.id = fileDir.id;
-        })
+        dirData.dirs.find((dir) => dir.id === fileDir.id).files = fileDir.files;
 
         await fs.unlink(path.join(path.resolve(import.meta.dirname, '..'), "storage", filePath));
 
