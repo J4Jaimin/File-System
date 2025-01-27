@@ -23,7 +23,15 @@ router.get("/:id?", async (req, res, next) => {
             res.json(folderData);
         }
         else {
-            const resData = folderData.dirs.find((dir) => dir.id === id);
+            const resData = dirData.dirs.find((dir) => dir.id === id);
+
+            resData.files = resData.files.map((fileId) =>
+                fileData.files.find((file) => file.id === fileId)
+            );
+
+            resData.directories = resData.directories.map((dirId) =>
+                dirData.dirs.find((dir) => dir.id === dirId));
+
             res.json(resData);
         }
 
@@ -37,7 +45,7 @@ router.post("/:dirname", async (req, res, next) => {
     try {
         const dirname = req.params.dirname;
         const id = crypto.randomUUID();
-        const parent = req.body.parent;
+        const parent = req.body.parent || dirData.dirs[0].id;
 
         dirData.dirs.find((dir) => dir.id === parent).directories.push(id);
 
@@ -51,7 +59,7 @@ router.post("/:dirname", async (req, res, next) => {
 
         await writeFile("./utils/foldersdata.json", JSON.stringify(dirData));
 
-        res.status(400).json({
+        res.status(200).json({
             message: "Directory created successfully"
         });
 

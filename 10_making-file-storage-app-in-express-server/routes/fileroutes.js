@@ -30,10 +30,8 @@ router.get("/:id", async (req, res, next) => {
 
         const file = fileData.files.find((file) => file.id === id);
 
-        if (!file) {
-            res.status(404).json({
-                message: "File not found"
-            });
+        if (req.query.action === "download") {
+            res.set("Content-Disposition", `attachment; filename=${file.fileName}`);
         }
 
         const fileName = path.join('/', file.id + file.ext);
@@ -51,7 +49,10 @@ router.get("/:id", async (req, res, next) => {
 router.patch("/:id", async (req, res, next) => {
     try {
         const id = req.params.id;
-        const newFileName = req.body.fileName;
+        console.log(id);
+        const newFileName = req.body.newFilename;
+
+        console.log(newFileName);
 
         fileData.files.find((file) => file.id === id).fileName = newFileName;
 
@@ -104,14 +105,20 @@ router.post("/:filename", async (req, res, next) => {
         const ext = path.extname(fileName);
         const id = crypto.randomUUID();
         const fullName = path.join('/', id + ext);
+        const dirId = req.headers.dirid || dirData.dirs[0].id;
+
+        dirData.dirs.find((dir) => dir.id === dirId).files.push(id);
 
         fileData.files.push({
             id,
             ext,
-            fileName
+            fileName,
+            dirId,
         });
 
         await writeFile("./utils/filesdata.json", JSON.stringify(fileData));
+
+        await writeFile("./utils/foldersdata.json", JSON.stringify(dirData));
 
         const writeStream = await createWriteStream(`./storage/${fullName}`);
 
