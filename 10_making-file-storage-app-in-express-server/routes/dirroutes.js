@@ -9,31 +9,16 @@ const router = express.Router();
 router.get("/:id?", async (req, res, next) => {
     try {
         const id = req.params.id;
+        const folderData = (!id) ? { ...dirData.dirs[0] } : dirData.dirs.find((dir) => dir.id === id);
 
-        if (!id) {
-            const folderData = { ...dirData.dirs[0] };
+        const files = folderData.files.map((fileId) =>
+            fileData.files.find((file) => file.id === fileId)
+        );
 
-            folderData.files = folderData.files.map((fileId) =>
-                fileData.files.find((file) => file.id === fileId)
-            );
+        const directories = folderData.directories.map((dirId) =>
+            dirData.dirs.find((dir) => dir.id === dirId)).map(({ id, name }) => ({ id, name }));
 
-            folderData.directories = folderData.directories.map((dirId) =>
-                dirData.dirs.find((dir) => dir.id === dirId));
-
-            res.json(folderData);
-        }
-        else {
-            const resData = dirData.dirs.find((dir) => dir.id === id);
-
-            resData.files = resData.files.map((fileId) =>
-                fileData.files.find((file) => file.id === fileId)
-            );
-
-            resData.directories = resData.directories.map((dirId) =>
-                dirData.dirs.find((dir) => dir.id === dirId));
-
-            res.json(resData);
-        }
+        res.json({ ...folderData, files, directories });
 
     } catch (err) {
         next(err);
@@ -45,7 +30,7 @@ router.post("/:dirname", async (req, res, next) => {
     try {
         const dirname = req.params.dirname;
         const id = crypto.randomUUID();
-        const parent = req.body.parent || dirData.dirs[0].id;
+        const parent = req.headers.parent || dirData.dirs[0].id;
 
         dirData.dirs.find((dir) => dir.id === parent).directories.push(id);
 

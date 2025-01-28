@@ -8,16 +8,17 @@ function DirectoryView() {
   const [progress, setProgress] = useState(0);
   const [newFilename, setNewFilename] = useState("");
   const [dirName, setDirName] = useState("");
+  const { dirId } = useParams();
 
   async function getDirectoryItems() {
-    const response = await fetch(`${BASE_URL}/directory/`);
+    const response = await fetch(`${BASE_URL}/directory/${dirId || ""}`);
     const data = await response.json();
     setFilesList(data.files);
     setDirectoriesList(data.directories);
   }
   useEffect(() => {
     getDirectoryItems();
-  }, []);
+  }, [dirId]);
 
   async function uploadFile(e) {
     const file = e.target.files[0];
@@ -27,7 +28,7 @@ function DirectoryView() {
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${BASE_URL}/file/${file.name}`, true);
-    // xhr.setRequestHeader("dirid", null);
+    xhr.setRequestHeader("dirid", dirId);
     xhr.addEventListener("load", () => {
       console.log(xhr.response);
       getDirectoryItems();
@@ -46,6 +47,7 @@ function DirectoryView() {
       method: "POST",
       headers: {
         "content-type": "application/json",
+        "parent": dirId
       },
       body: JSON.stringify({ dirName }),
     });
@@ -102,7 +104,7 @@ function DirectoryView() {
       {directoriesList.map(({ name, id }) => (
         <div key={id}>
           {name}{" "}
-          <a href={`${BASE_URL}/directory/${id}`}>Open</a>{" "}
+          <Link to={`/directory/${id}`}>Open</Link>{" "}
           <button onClick={() => renameFile(id, name)}>Rename</button>
           <button onClick={() => saveFilename(id)}>Save</button>
           <button
