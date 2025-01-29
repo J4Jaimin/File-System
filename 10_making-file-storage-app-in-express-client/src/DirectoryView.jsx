@@ -28,7 +28,7 @@ function DirectoryView() {
 
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${BASE_URL}/file/${file.name}`, true);
-    xhr.setRequestHeader("dirid", dirId);
+    xhr.setRequestHeader("dirid", dirId || "");
     xhr.addEventListener("load", () => {
       console.log(xhr.response);
       getDirectoryItems();
@@ -43,16 +43,42 @@ function DirectoryView() {
 
   async function makeDirectory() {
     console.log(dirName);
-    const response = await fetch(`${BASE_URL}/directory/${dirName}`, {
+    const response = await fetch(`${BASE_URL}/directory/${dirId || ""}`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "parent": dirId
+        "name": dirName
       },
       body: JSON.stringify({ dirName }),
     });
     const data = await response.text();
     console.log(data);
+    getDirectoryItems();
+    setDirName("");
+  }
+  async function deleteDirectory(id) {
+    const response = await fetch(`${BASE_URL}/directory/${id}`, {
+      method: "DELETE",
+      headers: {
+        "content-type": "application/json"
+      },
+    });
+    const data = await response.text();
+    console.log(data);
+    getDirectoryItems();
+  }
+
+  async function saveDirectory(id) {
+    const response = await fetch(`${BASE_URL}/directory/${id}`, {
+      method: "PATCH",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ newDirName: `${newFilename}` }),
+    });
+    const data = await response.text();
+    console.log(data);
+    setNewFilename("");
     getDirectoryItems();
   }
 
@@ -65,13 +91,12 @@ function DirectoryView() {
     getDirectoryItems();
   }
 
-  async function renameFile(id, oldFileName) {
+  async function renameFile(oldFileName) {
     console.log({ oldFileName, newFilename });
     setNewFilename(oldFileName);
   }
 
   async function saveFilename(id) {
-    setNewFilename(id);
     const response = await fetch(`${BASE_URL}/file/${id}`, {
       method: "PATCH",
       headers: {
@@ -105,11 +130,11 @@ function DirectoryView() {
         <div key={id}>
           {name}{" "}
           <Link to={`/directory/${id}`}>Open</Link>{" "}
-          <button onClick={() => renameFile(id, name)}>Rename</button>
-          <button onClick={() => saveFilename(id)}>Save</button>
+          <button onClick={() => renameFile(name)}>Rename</button>
+          <button onClick={() => saveDirectory(id)}>Save</button>
           <button
             onClick={() => {
-              handleDelete(id);
+              deleteDirectory(id);
             }}
           >
             Delete
@@ -122,7 +147,7 @@ function DirectoryView() {
           {fileName}{" "}
           <a href={`${BASE_URL}/file/${id}`}>Open</a>{" "}
           <a href={`${BASE_URL}/file/${id}?action=download`}>Download</a>
-          <button onClick={() => renameFile(id, fileName)}>Rename</button>
+          <button onClick={() => renameFile(fileName)}>Rename</button>
           <button onClick={() => saveFilename(id)}>Save</button>
           <button
             onClick={() => {

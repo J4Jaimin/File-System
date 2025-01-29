@@ -26,7 +26,7 @@ const upload = multer({ storage });
 router.get("/:id", async (req, res, next) => {
 
     try {
-        const id = req.params.id;
+        const id = req.params.id || "";
 
         const file = fileData.files.find((file) => file.id === id);
 
