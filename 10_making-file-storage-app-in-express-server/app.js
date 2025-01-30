@@ -25,6 +25,12 @@ app.use(express.static("storage"));
 app.use('/file', fileRoutes);
 app.use('/directory', dirRoutes);
 
+app.use((err, req, res, next) => {
+  res.status(err.status || 500).json({
+    message: err.message || "Something went wrong",
+  });
+})
+
 
 // Serving File
 // app.use((req, res, next) => {
