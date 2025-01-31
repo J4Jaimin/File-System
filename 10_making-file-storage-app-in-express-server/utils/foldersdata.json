@@ -2,19 +2,17 @@
     "dirs": [
         {
             "id": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
-            "name": "root",
-            "parent": "",
+            "name": "root-email",
+            "parent": null,
             "files": [
                 "d5d404df-a362-40f4-b4b3-785a351ecf19"
             ],
-            "directories": [
-                "258eaf10-0b27-4aef-aa24-568673f9e1cd"
-            ]
+            "directories": []
         },
         {
-            "id": "258eaf10-0b27-4aef-aa24-568673f9e1cd",
-            "name": "Meet",
-            "parent": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
+            "id": "ffa07062-7e3b-46b5-9e41-0c2d03480662",
+            "name": "root-meet09@yahoo.com",
+            "parent": null,
             "files": [],
             "directories": []
         }

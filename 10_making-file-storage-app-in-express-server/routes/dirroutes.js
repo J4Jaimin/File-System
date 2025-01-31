@@ -15,7 +15,7 @@ router.get("/:id?", async (req, res, next) => {
     if (!folderData) {
         return res.status(404).json({
             message: "Directory not found"
-        })
+        });
     }
 
     const files = folderData.files.map((fileId) =>

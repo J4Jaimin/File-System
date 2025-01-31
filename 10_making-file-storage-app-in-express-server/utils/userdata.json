@@ -1,0 +1,17 @@
+{
+    "users": [
+        {
+            "id": "userid",
+            "name": "Jaimin",
+            "email": "j4jaimin@gmail.com",
+            "password": "1234",
+            "rootdir": "rootDirId"
+        },
+        {
+            "id": "730b2b1c-f71d-4ffe-bd94-0753371182c3",
+            "name": "Meet",
+            "email": "meet09@yahoo.com",
+            "rootdir": "ffa07062-7e3b-46b5-9e41-0c2d03480662"
+        }
+    ]
+}

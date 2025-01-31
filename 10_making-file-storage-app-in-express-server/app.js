@@ -2,6 +2,7 @@ import express from "express";
 import cors from 'cors';
 import fileRoutes from './routes/fileroutes.js';
 import dirRoutes from './routes/dirroutes.js';
+import userRoutes from './routes/userroutes.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static("storage"));
 
 app.use('/file', fileRoutes);
 app.use('/directory', dirRoutes);
+app.use('/user', userRoutes);
 
 app.use((err, req, res, next) => {
   res.status(err.status || 500).json({
