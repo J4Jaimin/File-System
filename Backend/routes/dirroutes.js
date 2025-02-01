@@ -140,7 +140,6 @@ router.delete("/:id", async (req, res, next) => {
 });
 
 // rename directory
-
 router.patch("/:id", async (req, res, next) => {
     const dirName = req.body.newDirName;
     const id = req.params.id;
