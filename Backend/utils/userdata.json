@@ -1,0 +1,11 @@
+{
+    "users": [
+        {
+            "id": "08130397-4bfd-42ab-a00e-284ee1789af8",
+            "name": "Jaimin Rana",
+            "email": "jaimin@gmail.com",
+            "password": "xyza",
+            "rootdir": "63e5197a-db20-41ca-aa5e-42130f0c9469"
+        }
+    ]
+}
