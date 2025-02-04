@@ -1,16 +1,18 @@
 import { rm, writeFile } from "fs/promises";
 import express from 'express';
+import path from "path";
 import dirData from '../utils/foldersdata.json' with {type: "json"};
 import fileData from '../utils/filesdata.json' with {type: "json"};
-import path from "path";
 
 const router = express.Router();
 
 // read
 router.get("/:id?", async (req, res, next) => {
 
-    const id = req.params.id || dirData.dirs[0].id;
-    const folderData = dirData.dirs.find((dir) => dir.id === id);
+    const { uid, email } = req.cookies;
+
+    const id = req.params.id || dirData.dirs.find((dir) => dir.userId === uid && dir.name === `root-${email}`).id;
+    const folderData = dirData.dirs.find((dir) => dir.userId === uid && dir.id === id);
 
     if (!folderData) {
         return res.status(404).json({
@@ -32,9 +34,10 @@ router.get("/:id?", async (req, res, next) => {
 // make new directory 
 router.post("/:parentId?", async (req, res, next) => {
 
+    const { uid, email } = req.cookies;
     const dirname = req.headers.dirname || "New Folder";
     const id = crypto.randomUUID();
-    const parent = req.params.parentId || dirData.dirs[0].id;
+    const parent = req.params.parentId || dirData.dirs.find((dir) => dir.name === `root-${email}`).id;
 
     const parentDir = dirData.dirs.find((dir) => dir.id === parent)
 
@@ -50,6 +53,7 @@ router.post("/:parentId?", async (req, res, next) => {
         id,
         name: dirname,
         parent,
+        userId: uid,
         files: [],
         directories: []
     });

@@ -1,13 +1,15 @@
 import express from "express";
 import cors from 'cors';
+import cookieParser from "cookie-parser";
 import fileRoutes from './routes/fileroutes.js';
 import dirRoutes from './routes/dirroutes.js';
 import userRoutes from './routes/userroutes.js';
+import isAuthorized from './middlewares/auth.js';
 
 const app = express();
 
 const corsOptions = {
-  origin: '*',
+  origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   credentials: true,
   exposedHeaders: ['Content-Disposition'],
@@ -19,12 +21,13 @@ const corsOptions = {
 //   next();
 // });
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(express.static("storage"));
 
-app.use('/file', fileRoutes);
-app.use('/directory', dirRoutes);
+app.use('/file', isAuthorized, fileRoutes);
+app.use('/directory', isAuthorized, dirRoutes);
 app.use('/user', userRoutes);
 
 app.use((err, req, res, next) => {

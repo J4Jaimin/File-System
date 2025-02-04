@@ -16,6 +16,18 @@ router.post("/register", async (req, res, next) => {
     const userId = crypto.randomUUID();
     const rootDirId = crypto.randomUUID();
 
+    const cookies = {
+        uid: userId,
+        email,
+    }
+
+    Object.entries(cookies).forEach(([key, value]) => {
+        res.cookie(key, value, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 7 * 1000,
+        });
+    });
+
     userData.users.push({
         id: userId,
         name,
@@ -45,6 +57,35 @@ router.post("/register", async (req, res, next) => {
         next(error);
     }
 })
+
+router.post('/login', (req, res, next) => {
+
+    const { email, password } = req.body;
+
+    const user = userData.users.find((user) => user.email === email);
+
+    if (!user || user.password !== password) {
+        return res.status(404).json({
+            error: "Invalid credentials"
+        });
+    }
+
+    const cookies = {
+        uid: user.id,
+        email: user.email,
+    }
+
+    Object.entries(cookies).forEach(([key, value]) => {
+        res.cookie(key, value, {
+            httpOnly: true,
+            maxAge: 60 * 60 * 24 * 7 * 1000,
+        });
+    });
+
+    res.status(200).json({
+        message: "User logged in successfully"
+    });
+});
 
 
 export default router;

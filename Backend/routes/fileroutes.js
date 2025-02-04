@@ -116,10 +116,11 @@ router.delete("/:id", async (req, res, next) => {
 router.post("/:id?", async (req, res, next) => {
 
     let fileName = req.headers.filename || "untitled";
+    const { email } = req.cookies;
     const ext = path.extname(fileName);
     const id = crypto.randomUUID();
     const fullName = path.join('/', id + ext);
-    const dirId = req.params.id || dirData.dirs[0].id;
+    const dirId = req.params.id || dirData.dirs.find((dir) => dir.name === `root-${email}`).id;
 
     dirData.dirs.find((dir) => dir.id === dirId).files.push(id);
 

@@ -6,6 +6,27 @@
             "email": "jaimin@gmail.com",
             "password": "xyza",
             "rootdir": "63e5197a-db20-41ca-aa5e-42130f0c9469"
+        },
+        {
+            "id": "19e17df3-93fc-4007-b9b4-ebe0c84141ef",
+            "name": "Meet Rana",
+            "email": "meet09@gmail.com",
+            "password": "0902",
+            "rootdir": "61183f2b-d579-4884-8a87-3449c32ee368"
+        },
+        {
+            "id": "1be4ce1f-267f-4a3b-b57c-7fca5244b383",
+            "name": "Faizan Sopariwala",
+            "email": "faizan4509@gmail.com",
+            "password": "4509",
+            "rootdir": "6099ed6c-6184-4206-a137-a165ea2b0c14"
+        },
+        {
+            "id": "34a0c00f-a3b6-4cfd-95c6-d9f8b12389bc",
+            "name": "Rohan Rana",
+            "email": "rohan@gmail.com",
+            "password": "2345",
+            "rootdir": "baea916b-35ad-4777-812d-b0bd355edb82"
         }
     ]
 }

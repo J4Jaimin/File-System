@@ -1,17 +1,6 @@
 {
     "dirs": [
         {
-            "id": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
-            "name": "root-email",
-            "parent": null,
-            "files": [],
-            "directories": [
-                "7492390d-f8d0-4c0c-be0c-1d600a37880a",
-                "f1f018aa-9fae-44a0-b3ea-affda75f12e2",
-                "9a12efb5-dbbf-4498-9fd9-02af0bae5d9e"
-            ]
-        },
-        {
             "id": "63e5197a-db20-41ca-aa5e-42130f0c9469",
             "name": "root-jaimin@gmail.com",
             "userId": "08130397-4bfd-42ab-a00e-284ee1789af8",
@@ -20,37 +9,27 @@
             "directories": []
         },
         {
-            "id": "7492390d-f8d0-4c0c-be0c-1d600a37880a",
-            "name": "Documents",
-            "parent": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
-            "files": [
-                "62b6f187-7f68-40b1-8a9c-65658de3b04c"
-            ],
+            "id": "61183f2b-d579-4884-8a87-3449c32ee368",
+            "name": "root-meet09@gmail.com",
+            "userId": "19e17df3-93fc-4007-b9b4-ebe0c84141ef",
+            "parent": null,
+            "files": [],
             "directories": []
         },
         {
-            "id": "f1f018aa-9fae-44a0-b3ea-affda75f12e2",
-            "name": "Downloads",
-            "parent": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
-            "files": [
-                "c776ee53-7dc6-4ab9-aeae-7829d66b590b",
-                "8209b5b6-0a8b-4741-a8e4-a640baed7aca",
-                "4df54005-ad08-4f69-b937-855d9f5d79ae",
-                "a0c3c803-fd94-4b9e-a0d5-89afb392b4b8",
-                "34662c18-5c6d-4277-8b6d-4740cf57a7b0",
-                "b5c2ec65-6625-4835-9ec0-645d1b2481c2",
-                "f6cf4e54-a590-47c9-8493-eba6255ceebf",
-                "403a69cd-c80c-47bd-9298-203da5184669"
-            ],
+            "id": "6099ed6c-6184-4206-a137-a165ea2b0c14",
+            "name": "root-faizan4509@gmail.com",
+            "userId": "1be4ce1f-267f-4a3b-b57c-7fca5244b383",
+            "parent": null,
+            "files": [],
             "directories": []
         },
         {
-            "id": "9a12efb5-dbbf-4498-9fd9-02af0bae5d9e",
-            "name": "Photos",
-            "parent": "248c42e5-ec4c-49dc-bb79-8c43bf1e0de0",
-            "files": [
-                "2a4b046a-29c5-42d1-a301-297d74b1dd56"
-            ],
+            "id": "baea916b-35ad-4777-812d-b0bd355edb82",
+            "name": "root-rohan@gmail.com",
+            "userId": "34a0c00f-a3b6-4cfd-95c6-d9f8b12389bc",
+            "parent": null,
+            "files": [],
             "directories": []
         }
     ]
