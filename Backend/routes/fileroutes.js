@@ -29,6 +29,13 @@ router.get("/:id", async (req, res, next) => {
         const id = req.params.id || "";
 
         const file = fileData.files.find((file) => file.id === id);
+        const directory = dirData.dirs.find((dir) => dir.id === file.dirId);
+
+        if (req.cookies.uid !== directory.userId) {
+            return res.status(403).json({
+                message: "You are not authorized to access this file."
+            });
+        }
 
         if (!file) {
             return res.status(404).json({
@@ -61,7 +68,16 @@ router.patch("/:id", async (req, res, next) => {
 
     console.log(newFileName);
 
-    fileData.files.find((file) => file.id === id).name = newFileName;
+    const fileToBeRename = fileData.files.find((file) => file.id === id);
+    const directory = dirData.dirs.find((dir) => dir.id === fileToBeRename.dirId);
+
+    if (req.cookies.uid !== directory.userId) {
+        return res.status(403).json({
+            message: "You are not authorized to rename this file."
+        });
+    }
+
+    fileToBeRename.name = newFileName;
 
     try {
         await writeFile("./utils/filesdata.json", JSON.stringify(fileData));
@@ -80,6 +96,14 @@ router.delete("/:id", async (req, res, next) => {
 
     const id = req.params.id;
     const file = fileData.files.find((file) => file.id === id);
+
+    const directory = dirData.dirs.find((dir) => dir.id === file.dirId);
+
+    if (req.cookies.uid !== directory.userId) {
+        return res.status(403).json({
+            message: "You are not authorized to delete this file."
+        });
+    }
 
     if (!file) {
         return res.status(404).json({

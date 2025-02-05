@@ -107,8 +107,9 @@ async function deleteNestedDirectories(directoryIds) {
 // delete directory 
 router.delete("/:id", async (req, res, next) => {
     try {
+        const { uid } = req.cookies;
         const id = req.params.id;
-        const dirIndex = dirData.dirs.findIndex((directory) => directory.id === id);
+        const dirIndex = dirData.dirs.findIndex((directory) => directory.id === id && directory.userId === uid);
 
         if (dirIndex === -1) {
             return res.status(404).json({
@@ -145,9 +146,11 @@ router.delete("/:id", async (req, res, next) => {
 
 // rename directory
 router.patch("/:id", async (req, res, next) => {
+
+    const { uid } = req.cookies;
     const dirName = req.body.newDirName;
     const id = req.params.id;
-    const dirToRename = dirData.dirs.find((dir) => dir.id === id)
+    const dirToRename = dirData.dirs.find((dir) => dir.id === id && directory.userId === uid);
 
     if (!dirToRename) {
         return res.status(404).json({
