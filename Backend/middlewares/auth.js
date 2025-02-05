@@ -11,6 +11,8 @@ const isAuthorized = (req, res, next) => {
         });
     }
 
+    req.user = user;
+
     next();
 }
 

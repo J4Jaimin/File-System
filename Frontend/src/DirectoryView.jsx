@@ -18,6 +18,9 @@ function DirectoryView() {
   const [directoriesList, setDirectoriesList] = useState([]);
   const [filesList, setFilesList] = useState([]);
 
+  // Error state
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Modal states
   const [showCreateDirModal, setShowCreateDirModal] = useState(false);
   const [newDirname, setNewDirname] = useState("New Folder");
@@ -39,30 +42,49 @@ function DirectoryView() {
   const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
 
   /**
+   * Utility: handle fetch errors
+   */
+  async function handleFetchErrors(response) {
+    if (!response.ok) {
+      let errMsg = `Request failed with status ${response.status}`;
+      try {
+        const data = await response.json();
+        if (data.error) errMsg = data.error;
+      } catch (_) {
+        // If JSON parsing fails, default errMsg stays
+      }
+      throw new Error(errMsg);
+    }
+    return response;
+  }
+
+  /**
    * Fetch directory contents
    */
   async function getDirectoryItems() {
-    const response = await fetch(`${BASE_URL}/directory/${dirId || ""}`, {
-      credentials: "include",
-    });
-    const data = await response.json();
+    setErrorMessage(""); // clear any existing error
+    try {
+      const response = await fetch(`${BASE_URL}/directory/${dirId || ""}`, {
+        credentials: "include",
+      });
 
-    if (response.status === 401) {
-      navigate("/login");
-    }
+      if (response.status === 401) {
+        navigate("/login");
+        return;
+      }
 
-    // Set directory name
-    if (data.name) {
+      await handleFetchErrors(response);
+      const data = await response.json();
+
+      // Set directory name
       setDirectoryName(dirId ? data.name : "My Drive");
-    } else {
-      setDirectoryName("My Drive");
-    }
 
-    // Reverse the directories and files so new items are on top
-    const reversedDirs = [...data.directories].reverse();
-    const reversedFiles = [...data.files].reverse();
-    setDirectoriesList(reversedDirs);
-    setFilesList(reversedFiles);
+      // Reverse directories and files so new items show on top
+      setDirectoriesList([...data.directories].reverse());
+      setFilesList([...data.files].reverse());
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   useEffect(() => {
@@ -200,7 +222,7 @@ function DirectoryView() {
       processUploadQueue(restQueue);
     });
 
-    // If user cancels, we also remove from the queue
+    // If user cancels, remove from the queue
     setUploadXhrMap((prev) => ({ ...prev, [currentItem.id]: xhr }));
     xhr.send(currentItem.file);
   }
@@ -213,10 +235,10 @@ function DirectoryView() {
     if (xhr) {
       xhr.abort();
     }
-    // Remove it from queue if it’s still there
+    // Remove it from queue if still there
     setUploadQueue((prev) => prev.filter((item) => item.id !== tempId));
 
-    // Remove from the filesList
+    // Remove from filesList
     setFilesList((prev) => prev.filter((f) => f.id !== tempId));
 
     // Remove from progressMap
@@ -237,19 +259,31 @@ function DirectoryView() {
    * Delete a file/directory
    */
   async function handleDeleteFile(id) {
-    await fetch(`${BASE_URL}/file/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    getDirectoryItems();
+    setErrorMessage("");
+    try {
+      const response = await fetch(`${BASE_URL}/file/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      await handleFetchErrors(response);
+      getDirectoryItems();
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   async function handleDeleteDirectory(id) {
-    await fetch(`${BASE_URL}/directory/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    getDirectoryItems();
+    setErrorMessage("");
+    try {
+      const response = await fetch(`${BASE_URL}/directory/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      await handleFetchErrors(response);
+      getDirectoryItems();
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   /**
@@ -257,16 +291,22 @@ function DirectoryView() {
    */
   async function handleCreateDirectory(e) {
     e.preventDefault();
-    await fetch(`${BASE_URL}/directory/${dirId || ""}`, {
-      method: "POST",
-      headers: {
-        dirname: newDirname,
-      },
-      credentials: "include",
-    });
-    setNewDirname("New Folder");
-    setShowCreateDirModal(false);
-    getDirectoryItems();
+    setErrorMessage("");
+    try {
+      const response = await fetch(`${BASE_URL}/directory/${dirId || ""}`, {
+        method: "POST",
+        headers: {
+          dirname: newDirname,
+        },
+        credentials: "include",
+      });
+      await handleFetchErrors(response);
+      setNewDirname("New Folder");
+      setShowCreateDirModal(false);
+      getDirectoryItems();
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   /**
@@ -281,31 +321,34 @@ function DirectoryView() {
 
   async function handleRenameSubmit(e) {
     e.preventDefault();
-    if (renameType === "file") {
-      await fetch(`${BASE_URL}/file/${renameId}`, {
+    setErrorMessage("");
+    try {
+      const url =
+        renameType === "file"
+          ? `${BASE_URL}/file/${renameId}`
+          : `${BASE_URL}/directory/${renameId}`;
+      const response = await fetch(url, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify(
+          renameType === "file"
+            ? { newFilename: renameValue }
+            : { newDirName: renameValue }
+        ),
         credentials: "include",
-        body: JSON.stringify({ newFilename: renameValue }),
       });
-    } else {
-      await fetch(`${BASE_URL}/directory/${renameId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({ newDirName: renameValue }),
-      });
-    }
+      await handleFetchErrors(response);
 
-    setShowRenameModal(false);
-    setRenameValue("");
-    setRenameType(null);
-    setRenameId(null);
-    getDirectoryItems();
+      setShowRenameModal(false);
+      setRenameValue("");
+      setRenameType(null);
+      setRenameId(null);
+      getDirectoryItems();
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
   }
 
   /**
@@ -338,15 +381,26 @@ function DirectoryView() {
     ...directoriesList.map((d) => ({ ...d, isDirectory: true })),
     ...filesList.map((f) => ({ ...f, isDirectory: false })),
   ];
-
   return (
     <div className="directory-view">
+      {/* Top error message for general errors */}
+      {errorMessage &&
+        errorMessage !==
+        "Directory not found or you do not have access to it!" && (
+          <div className="error-message">{errorMessage}</div>
+        )}
+
       <DirectoryHeader
         directoryName={directoryName}
         onCreateFolderClick={() => setShowCreateDirModal(true)}
         onUploadFilesClick={() => fileInputRef.current.click()}
         fileInputRef={fileInputRef}
         handleFileSelect={handleFileSelect}
+        // Disable if the user doesn't have access
+        disabled={
+          errorMessage ===
+          "Directory not found or you do not have access to it!"
+        }
       />
 
       {/* Create Directory Modal */}
@@ -370,12 +424,19 @@ function DirectoryView() {
         />
       )}
 
-      {/* If folder is empty */}
       {combinedItems.length === 0 ? (
-        <p className="no-data-message">
-          This folder is empty. Upload files or create a folder to see some
-          data.
-        </p>
+        // Check if the error is specifically the "no access" error
+        errorMessage ===
+          "Directory not found or you do not have access to it!" ? (
+          <p className="no-data-message">
+            Directory not found or you do not have access to it!
+          </p>
+        ) : (
+          <p className="no-data-message">
+            This folder is empty. Upload files or create a folder to see some
+            data.
+          </p>
+        )
       ) : (
         <DirectoryList
           items={combinedItems}

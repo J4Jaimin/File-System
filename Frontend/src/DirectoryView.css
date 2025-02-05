@@ -74,7 +74,11 @@
   justify-content: center;
 }
 
-.icon-button:hover {
+.icon-button:disabled {
+  opacity: 0.5;
+}
+
+.icon-button:hover:not(:disabled) {
   color: #0056b3;
 }
 
@@ -237,4 +241,65 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+/* Container that holds the user icon and the dropdown */
+.user-menu-container {
+  position: relative; /* so .user-menu can be absolutely positioned within */
+}
+
+/* The dropdown menu itself */
+.user-menu {
+  position: absolute;
+  top: 28px; /* adjust if needed to align with your header height */
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+  min-width: 150px;
+}
+
+/* Each clickable row in the menu */
+.user-menu-item {
+  display: flex;
+  overflow: hidden;
+  gap: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #333;
+  font-size: 0.95rem;
+  white-space: nowrap; /* Prevents text wrapping if it's narrow */
+}
+
+/* A thin separator line */
+.user-menu-divider {
+  border-top: 1px solid #eaeaea;
+}
+
+/* Name/Email container (non-clickable if you like) */
+.user-info {
+  flex-direction: column; /* stack name & email vertically */
+  cursor: auto; /* make it not look clickable */
+}
+
+.user-name {
+  font-weight: 600;
+  color: #222;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* Icon to the left of the text (logout, login, etc.) */
+.menu-item-icon {
+  font-size: 1rem;
+  color: #007bff; /* or your theme color */
+}
+
+.login-btn:hover {
+  background-color: rgb(233, 233, 233);
 }

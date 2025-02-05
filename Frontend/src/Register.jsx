@@ -6,9 +6,9 @@ const Register = () => {
   const BASE_URL = "http://localhost:4000";
 
   const [formData, setFormData] = useState({
-    name: "Jaimin Rana",
-    email: "jaimin@gmail.com",
-    password: "xyza",
+    name: "Meet Rana",
+    email: "meet@gmail.com",
+    password: "abcd",
   });
 
   // serverError will hold the error message from the server
@@ -45,7 +45,6 @@ const Register = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
       });
 
       const data = await response.json();

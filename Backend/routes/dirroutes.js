@@ -150,7 +150,7 @@ router.patch("/:id", async (req, res, next) => {
     const { uid } = req.cookies;
     const dirName = req.body.newDirName;
     const id = req.params.id;
-    const dirToRename = dirData.dirs.find((dir) => dir.id === id && directory.userId === uid);
+    const dirToRename = dirData.dirs.find((dir) => dir.id === id && dir.userId === uid);
 
     if (!dirToRename) {
         return res.status(404).json({
