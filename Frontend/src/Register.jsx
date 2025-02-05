@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css";
 
 const Register = () => {
-  const BASE_URL = "http://localhost:4000";
+  const BASE_URL = "https://file-system-mu.vercel.app";
 
   const [formData, setFormData] = useState({
     name: "Meet Rana",
