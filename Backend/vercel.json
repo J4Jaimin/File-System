@@ -12,5 +12,13 @@
             "src": "/(.*)",
             "dest": "app.js"
         }
-    ]
+    ],
+    "functions": {
+        "Backend/**/*.js": {
+            "includeFiles": [
+                "storage/**",
+                "utils/**/*.json"
+            ]
+        }
+    }
 }
