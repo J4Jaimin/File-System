@@ -15,10 +15,7 @@
     ],
     "functions": {
         "app.js": {
-            "includeFiles": [
-                "storage/**",
-                "utils/**/*.json"
-            ]
+            "includeFiles": "storage/**, utils/**/*.json"
         }
     }
 }
