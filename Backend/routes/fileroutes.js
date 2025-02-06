@@ -122,7 +122,7 @@ router.delete("/:id", async (req, res, next) => {
     dirData.dirs.find((dir) => dir.id === fileDir.id).files = fileDir.files;
 
     try {
-        await fs.unlink("/utils/storage", filePath);
+        await fs.unlink(path.join("/utils/storage", filePath));
         await writeFile("/utils/filesdata.json", JSON.stringify(fileData));
         await writeFile("/utils/foldersdata.json", JSON.stringify(dirData));
 
