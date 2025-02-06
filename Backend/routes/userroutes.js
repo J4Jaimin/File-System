@@ -84,6 +84,8 @@ router.post('/login', (req, res, next) => {
         res.cookie(key, value, {
             httpOnly: true,
             maxAge: 60 * 60 * 24 * 7 * 1000,
+            sameSite: "none",
+            secure: true
         });
     });
 
