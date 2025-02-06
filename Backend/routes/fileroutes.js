@@ -6,6 +6,7 @@ import { createWriteStream, write } from "fs";
 import fileData from "../utils/filesdata.json" with {type: "json"};
 import dirData from '../utils/foldersdata.json' with {type: "json"};
 import { dir } from "console";
+import { validateUuid } from "../middlewares/validation.js";
 
 const router = express.Router();
 
@@ -23,6 +24,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+router.param("id", validateUuid);
+
 router.get("/:id", async (req, res, next) => {
 
     try {
@@ -30,6 +33,8 @@ router.get("/:id", async (req, res, next) => {
 
         const file = fileData.files.find((file) => file.id === id);
         const directory = dirData.dirs.find((dir) => dir.id === file.dirId);
+        const fileName = path.join('/', file.id + file.ext);
+        const filePath = path.join(path.resolve(import.meta.dirname, '..'), "storage", fileName);
 
         if (req.cookies.uid !== directory.userId) {
             return res.status(403).json({
@@ -44,11 +49,9 @@ router.get("/:id", async (req, res, next) => {
         }
 
         if (req.query.action === "download") {
-            res.set("Content-Disposition", `attachment; filename=${file.name}`);
+            // res.set("Content-Disposition", `attachment; filename=${file.name}`);
+            return res.download(filePath, file.name);
         }
-
-        const fileName = path.join('/', file.id + file.ext);
-        const filePath = path.join(path.resolve(import.meta.dirname, '..'), "storage", fileName);
 
         return res.status(200).sendFile(filePath);
 
