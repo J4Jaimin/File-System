@@ -14,7 +14,7 @@
         }
     ],
     "functions": {
-        "Backend/**/*.js": {
+        "app.js": {
             "includeFiles": [
                 "storage/**",
                 "utils/**/*.json"
