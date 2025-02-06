@@ -3,8 +3,13 @@ import express from 'express';
 import path from "path";
 import dirData from '../utils/foldersdata.json' with {type: "json"};
 import fileData from '../utils/filesdata.json' with {type: "json"};
+import { validateUuid } from "../middlewares/validation.js";
 
 const router = express.Router();
+
+// validation
+router.param("id", validateUuid);
+router.param("parentId", validateUuid);
 
 // read
 router.get("/:id?", async (req, res, next) => {
