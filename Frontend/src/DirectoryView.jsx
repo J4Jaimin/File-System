@@ -7,7 +7,7 @@ import DirectoryList from "./components/DirectoryList";
 import "./DirectoryView.css";
 
 function DirectoryView() {
-  const BASE_URL = "https://file-system-mu.vercel.app";
+  const BASE_URL = "http://localhost:4000";
   const { dirId } = useParams();
   const navigate = useNavigate();
 

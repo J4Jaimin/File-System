@@ -5,7 +5,6 @@ import multer from 'multer';
 import { createWriteStream, write } from "fs";
 import fileData from "../utils/filesdata.json" with {type: "json"};
 import dirData from '../utils/foldersdata.json' with {type: "json"};
-import { dir } from "console";
 import { validateUuid } from "../middlewares/validation.js";
 
 const router = express.Router();
@@ -126,8 +125,8 @@ router.delete("/:id", async (req, res, next) => {
 
     try {
         await fs.unlink(path.join(path.resolve(import.meta.dirname, '..'), "storage", filePath));
-        await writeFile(path.resolve(import.meta.dirname, '..', "/utils/filesdata.json"), JSON.stringify(fileData));
-        await writeFile(path.resolve(import.meta.dirname, '..', "/utils/filesdata.json"), JSON.stringify(dirData));
+        await writeFile("./utils/filesdata.json", JSON.stringify(fileData));
+        await writeFile("./utils/filesdata.json", JSON.stringify(dirData));
 
         return res.status(200).json({
             message: "File deleted successfully"

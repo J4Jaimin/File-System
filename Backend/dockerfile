@@ -1,0 +1,26 @@
+# Use a modern Node.js version
+FROM node:22-slim
+
+# Manually create the /app directory
+RUN mkdir -p /app
+
+# Set the working directory
+WORKDIR /app
+
+# Copy package.json first (to leverage Docker cache)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy all project files
+COPY . .
+
+# Show contents for debugging (Remove this after testing)
+RUN ls -l /app
+
+# Expose the port
+EXPOSE 4000
+
+# Start the application
+CMD ["node", "app.js"]
