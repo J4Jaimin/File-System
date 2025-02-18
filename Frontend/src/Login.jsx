@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css";
 
 const Login = () => {
-  const BASE_URL = "http://localhost:4000";
+  const BASE_URL = "https://jai-drive.onrender.com";
 
   const [formData, setFormData] = useState({
     email: "jaimin@gmail.com",
