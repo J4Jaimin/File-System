@@ -17,28 +17,30 @@ function DirectoryList({
 }) {
   return (
     <div className="directory-list">
-      {items.map((item) => {
-        const uploadProgress = progressMap[item.id] || 0;
+      {items.length > 0 &&
+        items.map((item, index) => {
+          const uploadProgress = progressMap[item.id] || 0;
+          const uniqueKey = item?.id || `temp-${index}-${Math.random()}`;
 
-        return (
-          <DirectoryItem
-            key={item.id}
-            item={item}
-            handleRowClick={handleRowClick}
-            activeContextMenu={activeContextMenu}
-            contextMenuPos={contextMenuPos}
-            handleContextMenu={handleContextMenu}
-            getFileIcon={getFileIcon}
-            isUploading={isUploading}
-            uploadProgress={uploadProgress}
-            handleCancelUpload={handleCancelUpload}
-            handleDeleteFile={handleDeleteFile}
-            handleDeleteDirectory={handleDeleteDirectory}
-            openRenameModal={openRenameModal}
-            BASE_URL={BASE_URL}
-          />
-        );
-      })}
+          return (
+            <DirectoryItem
+              key={uniqueKey}
+              item={item}
+              handleRowClick={handleRowClick}
+              activeContextMenu={activeContextMenu}
+              contextMenuPos={contextMenuPos}
+              handleContextMenu={handleContextMenu}
+              getFileIcon={getFileIcon}
+              isUploading={isUploading}
+              uploadProgress={uploadProgress}
+              handleCancelUpload={handleCancelUpload}
+              handleDeleteFile={handleDeleteFile}
+              handleDeleteDirectory={handleDeleteDirectory}
+              openRenameModal={openRenameModal}
+              BASE_URL={BASE_URL}
+            />
+          );
+        })}
     </div>
   );
 }
