@@ -104,14 +104,14 @@ router.post("/:parentId?", async (req, res, next) => {
     }
 });
 
-async function deleteFilesInDirectory(directoryData, db) {
-    for (const fileId of directoryData.files) {
+async function deleteFilesInDirectory(fileIds, db) {
+    for (const fileId of fileIds) {
         const fileData = await db.collection("files").findOne({ _id: new ObjectId(fileId) });
         if (fileData) {
             await rm(path.join(path.resolve(import.meta.dirname, '..'), "storage", `${new ObjectId(fileId)}${fileData.ext}`));
         }
     }
-    await db.collection("files").deleteMany({ _id: { $in: directoryData.files } });
+    await db.collection("files").deleteMany({ _id: { $in: fileIds } });
 }
 
 // delete recursively nested directories.
@@ -122,7 +122,7 @@ async function deleteNestedDirectories(directoryIds, db) {
         const dir = await db.collection("directories").findOne({ _id: new ObjectId(dirId) });
 
         if (dir) {
-            await deleteFilesInDirectory(dir, db);
+            await deleteFilesInDirectory(dir.files, db);
             await deleteNestedDirectories(dir.directories, db);
             await db.collection("directories").findOneAndUpdate(
                 { _id: dir.parent },
@@ -142,7 +142,10 @@ router.delete("/:id", async (req, res, next) => {
         const { uid } = req.cookies;
         const id = req.params.id;
         const db = req.db;
-        const dirData = await db.collection("directories").findOne({ _id: new ObjectId(id) });
+        const dirData = await db.collection("directories").findOne(
+            { _id: new ObjectId(id) },
+            { projection: { _id: 1, files: 1, directories: 1, parent: 1 } }
+        );
 
         if (!dirData) {
             return res.status(404).json({
@@ -150,7 +153,7 @@ router.delete("/:id", async (req, res, next) => {
             })
         }
 
-        await deleteFilesInDirectory(dirData, db);
+        await deleteFilesInDirectory(dirData.files, db);
 
         await db.collection("directories").findOneAndUpdate(
             { _id: new ObjectId(id) },
@@ -175,6 +178,61 @@ router.delete("/:id", async (req, res, next) => {
         next(err);
     }
 });
+
+// router.delete("/:id", async (req, res, next) => {
+//     const { id } = req.params;
+//     const db = req.db;
+//     const filesCollection = db.collection("files");
+//     const dirCollection = db.collection("directories");
+//     const dirObjId = new ObjectId(id);
+
+//     const directoryData = await dirCollection.findOne(
+//         {
+//             _id: dirObjId,
+//             userId: req.user._id,
+//         },
+//         { projection: { _id: 1 } }
+//     );
+
+//     if (!directoryData) {
+//         return res.status(404).json({ error: "Directory not found!" });
+//     }
+
+//     async function getDirectoryContents(id) {
+//         let files = await filesCollection
+//             .find({ parentDirId: id }, { projection: { extension: 1 } })
+//             .toArray();
+//         let directories = await dirCollection
+//             .find({ parentDirId: id }, { projection: { _id: 1 } })
+//             .toArray();
+
+//         for (const { _id, name } of directories) {
+//             const { files: childFiles, directories: childDirectories } =
+//                 await getDirectoryContents(new ObjectId(_id));
+
+//             files = [...files, ...childFiles];
+//             directories = [...directories, ...childDirectories];
+//         }
+
+//         return { files, directories };
+//     }
+
+//     const { files, directories } = await getDirectoryContents(dirObjId);
+
+//     for (const { _id, extension } of files) {
+//         await rm(`./storage/${_id.toString()}${extension}`);
+//     }
+
+//     await filesCollection.deleteMany({
+//         _id: { $in: files.map(({ _id }) => _id) },
+//     });
+
+//     await dirCollection.deleteMany({
+//         _id: { $in: [...directories.map(({ _id }) => _id), dirObjId] },
+//     });
+
+//     return res.json({ message: "Files deleted successfully" });
+// });
 
 // rename directory
 router.patch("/:id", async (req, res, next) => {
