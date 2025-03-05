@@ -1,11 +1,10 @@
 import express from "express";
 import path from 'path';
-import fs, { writeFile } from 'fs/promises';
+import fs from 'fs/promises';
 import multer from 'multer';
-import { createWriteStream, write } from "fs";
-import fileData from "../utils/filesdata.json" with {type: "json"};
-import dirData from '../utils/foldersdata.json' with {type: "json"};
+import { createWriteStream } from "fs";
 import { ObjectId } from "mongodb";
+import { validateObjectId } from "../middlewares/validation.js";
 
 const router = express.Router();
 
@@ -23,7 +22,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// router.param("id", validateUuid);
+router.param("id", validateObjectId);
 
 router.get("/:id", async (req, res, next) => {
 

@@ -1,16 +1,14 @@
-import { rm, writeFile } from "fs/promises";
+import { rm } from "fs/promises";
 import express from 'express';
 import path from "path";
-import dirData from '../utils/foldersdata.json' with {type: "json"};
-import fileData from '../utils/filesdata.json' with {type: "json"};
-import { validateUuid } from "../middlewares/validation.js";
 import { ObjectId } from 'mongodb';
+import { validateObjectId } from "../middlewares/validation.js";
 
 const router = express.Router();
 
 // validation
-// router.param("id", validateUuid);
-// router.param("parentId", validateUuid);
+router.param("id", validateObjectId);
+router.param("parentId", validateObjectId);
 
 // read
 router.get("/:id?", async (req, res, next) => {
@@ -107,16 +105,13 @@ router.post("/:parentId?", async (req, res, next) => {
 });
 
 async function deleteFilesInDirectory(directoryData, db) {
-
     for (const fileId of directoryData.files) {
-
         const fileData = await db.collection("files").findOne({ _id: new ObjectId(fileId) });
-
         if (fileData) {
             await rm(path.join(path.resolve(import.meta.dirname, '..'), "storage", `${new ObjectId(fileId)}${fileData.ext}`));
-            await db.collection("files").deleteOne({ _id: new ObjectId(fileId) });
         }
     }
+    await db.collection("files").deleteMany({ _id: { $in: directoryData.files } });
 }
 
 // delete recursively nested directories.
@@ -129,7 +124,6 @@ async function deleteNestedDirectories(directoryIds, db) {
         if (dir) {
             await deleteFilesInDirectory(dir, db);
             await deleteNestedDirectories(dir.directories, db);
-            await db.collection("directories").deleteOne({ _id: new ObjectId(dirId) });
             await db.collection("directories").findOneAndUpdate(
                 { _id: dir.parent },
                 {
@@ -137,6 +131,8 @@ async function deleteNestedDirectories(directoryIds, db) {
                 });
         }
     }
+
+    await db.collection("directories").deleteMany({ _id: { $in: directoryIds } });
 }
 
 // delete directory 
