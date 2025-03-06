@@ -1,7 +1,4 @@
 import express from 'express';
-import userData from '../utils/userdata.json' with {type: "json"};
-import dirData from '../utils/foldersdata.json' with {type: "json"};
-import { writeFile } from 'fs/promises';
 import isAuthorized from '../middlewares/auth.js';
 
 
