@@ -1,11 +1,10 @@
-import { ObjectId } from 'mongodb';
+import UserModel from '../models/usermodel.js';
 
 const isAuthorized = async (req, res, next) => {
     const { uid } = req.cookies;
-    const db = req.db;
 
     try {
-        const user = await db.collection('user').findOne({ _id: new ObjectId(uid) });
+        const user = await UserModel.findOne({ _id: uid });
 
         if (!uid || !user) {
             return res.status(401).json({

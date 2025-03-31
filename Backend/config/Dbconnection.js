@@ -1,16 +1,16 @@
-import { MongoClient } from 'mongodb';
+import mongoose from 'mongoose';
 
-export const client = new MongoClient('mongodb://127.0.0.1:27017/filestorage');
+export const connectDB = async () => {
+    try {
+        await mongoose.connect(process.env.MONGO_URI || 'mongodb://jaimin:jaimin11@localhost:27017/filestorage');
+        console.log('MongoDB Connected Successfully');
+    } catch (error) {
+        console.error('MongoDB Connection Failed:', error.message);
+        process.exit(1);
+    }
+};
 
-export async function connectDB() {
-
-    await client.connect();
-    const db = client.db();
-
-    console.log("DB connection successful!!");
-
-    return db;
-}
+export const client = mongoose.connection.getClient();
 
 process.on("SIGINT", async () => {
     await client.close();

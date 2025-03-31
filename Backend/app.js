@@ -5,10 +5,12 @@ import fileRoutes from './routes/fileroutes.js';
 import dirRoutes from './routes/dirroutes.js';
 import userRoutes from './routes/userroutes.js';
 import isAuthorized from './middlewares/auth.js';
-import { connectDB } from "./utils/Dbconnection.js";
+import { connectDB } from "./config/Dbconnection.js";
 
 try {
-  const db = await connectDB();
+
+  // DB connection
+  connectDB();
   const app = express();
 
   const corsOptions = {
@@ -28,11 +30,6 @@ try {
   app.use(express.json());
   app.use(cors(corsOptions));
   app.use(express.static("storage"));
-
-  app.use((req, res, next) => {
-    req.db = db;
-    next();
-  });
 
   app.use('/file', isAuthorized, fileRoutes);
   app.use('/directory', isAuthorized, dirRoutes);
