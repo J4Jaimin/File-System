@@ -77,7 +77,7 @@ function DirectoryView() {
       const data = await response.json();
 
       // Set directory name
-      setDirectoryName(dirId ? data.name : "My Drive");
+      setDirectoryName(dirId ? data._doc.name : "My Drive");
 
       // Reverse directories and files so new items show on top
       setDirectoriesList([...data.directories].reverse());
@@ -224,7 +224,11 @@ function DirectoryView() {
 
     // If user cancels, remove from the queue
     setUploadXhrMap((prev) => ({ ...prev, [currentItem.id]: xhr }));
-    xhr.send(currentItem.file);
+
+    const formData = new FormData();
+    formData.append("file", currentItem.file);
+
+    xhr.send(formData);
   }
 
   /**
