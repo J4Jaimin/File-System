@@ -22,13 +22,12 @@ import DirModel from '../models/dirmodel.js';
 export const getFile = async (req, res, next) => {
 
     const id = req.params.id || "";
-    const db = req.db;
 
     try {
         const file = await FileModel.findById(id);
         const directory = await DirModel.findById(file.dirId);
 
-        const fileName = path.join('/', file._id.toString() + file.ext);
+        const fileName = path.join('/', file._id + file.ext);
         const filePath = path.join(path.resolve(import.meta.dirname, '..'), "storage", fileName);
 
         if (req.cookies.uid !== directory.userId.toString()) {
