@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export const connectDB = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI || 'mongodb://jaimin:jaimin11@localhost:27017/filestorage');
+        await mongoose.connect(process.env.MONGO_URI || 'mongodb+srv://jaimin19beceg120:5jKBq4i8HXLyTS3v@cluster0.4m3groq.mongodb.net/filestorage?retryWrites=true&w=majority&appName=Cluster0');
         console.log('MongoDB Connected Successfully');
     } catch (error) {
         console.error('MongoDB Connection Failed:', error.message);
