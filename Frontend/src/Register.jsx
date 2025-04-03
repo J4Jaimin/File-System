@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css";
 
 const Register = () => {
-  const BASE_URL = "http://localhost:4000" //"https://jai-drive.onrender.com";
+  const BASE_URL = "http://localhost:4000" // "https://jai-drive.onrender.com";
 
   const [formData, setFormData] = useState({
     name: "Meet Rana",
