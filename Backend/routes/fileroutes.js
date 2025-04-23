@@ -1,6 +1,7 @@
 import express from "express";
 import { validateObjectId } from "../middlewares/validation.js";
 import { deleteFile, getFile, renameFile, uploadFile } from "../controllers/filecontroller.js";
+import isAuthorized from "../middlewares/auth.js";
 
 const router = express.Router();
 

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import crypto from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 
@@ -15,16 +16,6 @@ export const registerUser = async (req, res, next) => {
     const session = await mongoose.startSession();
 
     try {
-
-        const foundUser = await UserModel.findOne({ email });
-
-        if (foundUser) {
-            return res.status(409).json({
-                error: "User already exists",
-                message: "A user with this email is already exist, please try different email.",
-            });
-        }
-
         session.startTransaction();
 
         const dir = {
@@ -66,6 +57,14 @@ export const registerUser = async (req, res, next) => {
                 error: "Invalid Field, Please enter valid input."
             });
         }
+        else if (error.code === 11000) {
+            if (error.keyValue.email) {
+                return res.status(409).json({
+                    error: "User already exists",
+                    message: "A user with this email is already exist, please try different email.",
+                });
+            }
+        }
         else {
             next(error);
         }
@@ -86,17 +85,20 @@ export const loginUser = async (req, res, next) => {
             });
         }
 
+        const expirationTime = (Math.floor(Date.now() / 1000) + 3600).toString(16);
+
+        const hashForVerification = crypto.createHash("sha256").update(user._id.toString() + expirationTime).digest("base64url");
+
         const cookies = {
-            uid: user._id.toString(),
+            uid: user._id.toString() + expirationTime,
             email: user.email,
+            hmac: hashForVerification,
         }
 
         Object.entries(cookies).forEach(([key, value]) => {
             res.cookie(key, value, {
                 httpOnly: true,
-                maxAge: 60 * 60 * 24 * 7 * 1000,
-                sameSite: "none",
-                secure: true
+                maxAge: 60 * 60 * 1000,
             });
         });
 
@@ -113,6 +115,7 @@ export const loginUser = async (req, res, next) => {
 export const logoutUser = (req, res, next) => {
     res.clearCookie('uid');
     res.clearCookie('email');
+    res.clearCookie('hmac');
     res.status(200).json({
         message: "User logged out successfully"
     });

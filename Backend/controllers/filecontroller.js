@@ -30,7 +30,7 @@ export const getFile = async (req, res, next) => {
         const fileName = path.join('/', file._id + file.ext);
         const filePath = path.join(path.resolve(import.meta.dirname, '..'), "storage", fileName);
 
-        if (req.cookies.uid !== directory.userId.toString()) {
+        if (req.cookies.uid.substring(0, 24) !== directory.userId.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to access this file."
             });
@@ -66,7 +66,7 @@ export const renameFile = async (req, res, next) => {
         const fileToBeRename = await FileModel.findById(id);
         const directory = await DirModel.findById(fileToBeRename.dirId);
 
-        if (req.cookies.uid !== directory.userId.toString()) {
+        if (req.cookies.uid.substring(0, 24) !== directory.userId.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to rename this file."
             });
@@ -95,7 +95,7 @@ export const deleteFile = async (req, res, next) => {
         const file = await FileModel.findById(id);
         const directory = await DirModel.findById(file.dirId);
 
-        if (req.cookies.uid !== String(directory.userId)) {
+        if (req.cookies.uid.substring(0, 24) !== String(directory.userId)) {
             return res.status(403).json({
                 message: "You are not authorized to delete this file."
             });

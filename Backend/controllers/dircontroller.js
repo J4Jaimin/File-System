@@ -9,7 +9,7 @@ export const getDirectories = async (req, res, next) => {
     const { uid, email } = req.cookies;
 
     try {
-        const dir = await DirModel.findOne({ userId: uid });
+        const dir = await DirModel.findOne({ userId: uid.substring(0, 24) });
         const id = req.params.id || dir._id.toString();
         const folderData = await DirModel.findOne({ _id: id });
 
@@ -53,9 +53,10 @@ export const getDirectories = async (req, res, next) => {
 
 export const makeDirecotry = async (req, res, next) => {
 
-    const { uid, email } = req.cookies;
+    let { uid, email } = req.cookies;
     const dirname = req.headers.dirname || "New Folder";
     const session = await mongoose.startSession();
+    uid = uid.substring(0, 24);
 
     try {
         const dir = await DirModel.findOne({ userId: uid });
@@ -173,7 +174,6 @@ export const deleteDirectory = async (req, res, next) => {
 
 export const renameDirectory = async (req, res, next) => {
 
-    const { uid } = req.cookies;
     const dirName = req.body.newDirName;
     const id = req.params.id;
 
