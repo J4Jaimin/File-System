@@ -14,7 +14,7 @@ try {
   const app = express();
 
   const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'https://mydrive-umber.vercel.app', 'http://localhost'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'https://mydrive-umber.vercel.app', 'http://localhost', 'http://10.10.211.132:5173'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,
     exposedHeaders: ['Content-Disposition']
