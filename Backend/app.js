@@ -1,11 +1,13 @@
 import express from "express";
 import cors from 'cors';
-import cookieParser from "cookie-parser";
 import fileRoutes from './routes/fileroutes.js';
+import cookieParser from "cookie-parser";
 import dirRoutes from './routes/dirroutes.js';
 import userRoutes from './routes/userroutes.js';
 import isAuthorized from './middlewares/auth.js';
 import { connectDB } from "./config/Dbconnection.js";
+
+const mySecret = "my-super-secret-key@#$";
 
 try {
 
@@ -25,9 +27,8 @@ try {
   //   res.set("Access-Control-Allow-Origin", "*");
   //   next();
   // });
-
-  app.use(cookieParser());
   app.use(express.json());
+  app.use(cookieParser(mySecret));
   app.use(cors(corsOptions));
   app.use(express.static("storage"));
 

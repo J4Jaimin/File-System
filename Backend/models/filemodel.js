@@ -14,8 +14,6 @@ const fileModel = new mongoose.Schema({
         ref: 'directories',
         required: true
     }
-}, {
-    versionKey: false
 });
 
 export default mongoose.model('files', fileModel);

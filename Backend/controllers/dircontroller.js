@@ -6,10 +6,10 @@ import FileModel from "../models/filemodel.js";
 
 export const getDirectories = async (req, res, next) => {
 
-    const { uid, email } = req.cookies;
+    const { uid, email } = JSON.parse(req.signedCookies.token);
 
     try {
-        const dir = await DirModel.findOne({ userId: uid.substring(0, 24) });
+        const dir = await DirModel.findOne({ userId: uid });
         const id = req.params.id || dir._id.toString();
         const folderData = await DirModel.findOne({ _id: id });
 
@@ -53,10 +53,9 @@ export const getDirectories = async (req, res, next) => {
 
 export const makeDirecotry = async (req, res, next) => {
 
-    let { uid, email } = req.cookies;
+    let { uid } = JSON.parse(req.signedCookies.token);
     const dirname = req.headers.dirname || "New Folder";
     const session = await mongoose.startSession();
-    uid = uid.substring(0, 24);
 
     try {
         const dir = await DirModel.findOne({ userId: uid });
@@ -136,7 +135,7 @@ async function deleteNestedDirectories(directoryIds) {
 export const deleteDirectory = async (req, res, next) => {
 
     try {
-        const { uid } = req.cookies;
+        const { uid } = JSON.parse(req.signedCookies.token);
         const id = req.params.id;
         const dirData = await DirModel.findById(id);
 
