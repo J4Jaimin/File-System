@@ -1,10 +1,14 @@
-import { connectDB, client } from "./Dbconnection.js";
+import mongoose from "mongoose";
+import { connectDB } from "./Dbconnection.js";
 
-const db = await connectDB();
+await connectDB();
+
+const client = mongoose.connection.getClient();
 
 const status = "create";
 
 try {
+    const db = mongoose.connection.db;
     // schema validation users
     await db.command({
         [status]: "users",

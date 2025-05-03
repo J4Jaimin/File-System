@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import crypto from 'crypto';
+import crypto, { pbkdf2, pbkdf2Sync } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 
@@ -12,6 +12,10 @@ export const getUserDetails = (req, res, next) => {
 export const registerUser = async (req, res, next) => {
 
     const { name, email, password } = req.body;
+
+    const salt = crypto.randomBytes(16);
+
+    const newHashedPassword = pbkdf2Sync(password, salt, 100000, 32, 'sha256');
 
     const session = await mongoose.startSession();
 
@@ -30,7 +34,7 @@ export const registerUser = async (req, res, next) => {
         const user = {
             name,
             email,
-            password,
+            password: salt.toString('base64url') + "." + newHashedPassword.toString('base64url'),
             rootdir: insertedDir[0]._id
         }
 
@@ -77,7 +81,7 @@ export const loginUser = async (req, res, next) => {
 
     try {
         const { email, password } = req.body;
-        const user = await UserModel.findOne({ email, password });
+        const user = await UserModel.findOne({ email });
 
         if (!user) {
             return res.status(404).json({
@@ -85,21 +89,26 @@ export const loginUser = async (req, res, next) => {
             });
         }
 
-        const expirationTime = (Math.floor(Date.now() / 1000) + 3600).toString(16);
+        const [salt, savedPwdHash] = user.password.split('.');
 
-        const hashForVerification = crypto.createHash("sha256").update(user._id.toString() + expirationTime).digest("base64url");
+        const enteredPwdHash = pbkdf2Sync(password, Buffer.from(salt, 'base64url'), 100000, 32, 'sha256').toString('base64url');
 
-        const cookies = {
-            uid: user._id.toString() + expirationTime,
-            email: user.email,
-            hmac: hashForVerification,
+        if (savedPwdHash !== enteredPwdHash) {
+            return res.status(404).json({
+                error: "Invalid credentials"
+            });
         }
 
-        Object.entries(cookies).forEach(([key, value]) => {
-            res.cookie(key, value, {
-                httpOnly: true,
-                maxAge: 60 * 60 * 1000,
-            });
+        const cookiePayload = JSON.stringify({
+            uid: user._id.toString(),
+            email: email,
+            expiry: Math.round(Date.now() / 1000) + 3600,
+        });
+
+        res.cookie("token", cookiePayload, {
+            httpOnly: true,
+            signed: true,
+            maxAge: 60 * 60 * 1000
         });
 
         res.status(200).json({
@@ -113,9 +122,7 @@ export const loginUser = async (req, res, next) => {
 }
 
 export const logoutUser = (req, res, next) => {
-    res.clearCookie('uid');
-    res.clearCookie('email');
-    res.clearCookie('hmac');
+    res.clearCookie('token');
     res.status(200).json({
         message: "User logged out successfully"
     });

@@ -12,17 +12,13 @@ const userModel = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
-        minLength: 4,
-        maxLength: 8
+        required: true
     },
     rootdir: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'directories',
         required: true
     }
-}, {
-    versionKey: false
 });
 
 export default mongoose.model('users', userModel);
