@@ -13,10 +13,6 @@ export const registerUser = async (req, res, next) => {
 
     const { name, email, password } = req.body;
 
-    const salt = crypto.randomBytes(16);
-
-    const newHashedPassword = pbkdf2Sync(password, salt, 100000, 32, 'sha256');
-
     const session = await mongoose.startSession();
 
     try {
@@ -34,7 +30,7 @@ export const registerUser = async (req, res, next) => {
         const user = {
             name,
             email,
-            password: salt.toString('base64url') + "." + newHashedPassword.toString('base64url'),
+            password,
             rootdir: insertedDir[0]._id
         }
 
@@ -89,11 +85,9 @@ export const loginUser = async (req, res, next) => {
             });
         }
 
-        const [salt, savedPwdHash] = user.password.split('.');
+        const isPasswordCorrect = user.comparePassword(password);
 
-        const enteredPwdHash = pbkdf2Sync(password, Buffer.from(salt, 'base64url'), 100000, 32, 'sha256').toString('base64url');
-
-        if (savedPwdHash !== enteredPwdHash) {
+        if (!isPasswordCorrect) {
             return res.status(404).json({
                 error: "Invalid credentials"
             });
