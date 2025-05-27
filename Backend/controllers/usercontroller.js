@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import crypto, { pbkdf2, pbkdf2Sync } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
+import Session from '../models/sessionmodel.js';
 
 export const getUserDetails = (req, res, next) => {
     res.status(200).json({
@@ -93,13 +94,19 @@ export const loginUser = async (req, res, next) => {
             });
         }
 
-        const cookiePayload = JSON.stringify({
-            uid: user._id.toString(),
-            email: email,
-            expiry: Math.round(Date.now() / 1000) + 3600,
-        });
+        const session = await Session.create({ userId: user._id });
 
-        res.cookie("token", cookiePayload, {
+        const sessions = await Session.find({ userId: user._id });
+
+        if (sessions.length > 2) {
+            const oldestSession = sessions.reduce((oldest, current) => {
+                return oldest.createdAt < current.createdAt ? oldest : current;
+            });
+
+            await Session.deleteOne({ _id: oldestSession._id });
+        }
+
+        res.cookie("sid", session.id, {
             httpOnly: true,
             signed: true,
             maxAge: 60 * 60 * 1000
@@ -116,7 +123,7 @@ export const loginUser = async (req, res, next) => {
 }
 
 export const logoutUser = (req, res, next) => {
-    res.clearCookie('token');
+    res.clearCookie('sid');
     res.status(200).json({
         message: "User logged out successfully"
     });

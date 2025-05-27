@@ -3,8 +3,9 @@ import path from 'path';
 import FileModel from '../models/filemodel.js';
 import fs from 'fs/promises';
 import { createWriteStream } from "fs";
-import { ObjectId } from "mongodb";
 import DirModel from '../models/dirmodel.js';
+import usermodel from '../models/usermodel.js';
+import Session from '../models/sessionmodel.js';
 
 // const storage = multer.diskStorage({
 //     destination: (req, file, cb) => {
@@ -30,7 +31,11 @@ export const getFile = async (req, res, next) => {
         const fileName = path.join('/', file._id + file.ext);
         const filePath = path.join(path.resolve(import.meta.dirname, '..'), "storage", fileName);
 
-        if (JSON.parse(req.signedCookies.token).uid !== directory.userId.toString()) {
+        const sid = req.signedCookies.sid;
+        const s = await Session.findById(sid);
+        const uid = s.userId;
+
+        if (uid.toString() !== directory.userId.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to access this file."
             });
@@ -131,12 +136,15 @@ export const deleteFile = async (req, res, next) => {
 export const uploadFile = async (req, res, next) => {
 
     let fileName = req.headers.filename || "untitled";
-    const { email } = JSON.parse(req.signedCookies.token);
+    let sid = req.signedCookies.sid;
+    const s = await Session.findById(sid);
+    const uid = s.userId;
+    const user = await usermodel.findById(uid);
     const ext = path.extname(fileName);
     const session = await mongoose.startSession();
 
     try {
-        const dir = await DirModel.findOne({ name: `root-${email}` });
+        const dir = await DirModel.findOne({ name: `root-${user.email}` });
         const dirId = req.params.id ? req.params.id : dir._id;
 
         session.startTransaction();

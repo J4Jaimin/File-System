@@ -3,10 +3,14 @@ import { rm } from 'fs/promises';
 import path from "path";
 import DirModel from "../models/dirmodel.js";
 import FileModel from "../models/filemodel.js";
+import usermodel from "../models/usermodel.js";
+import Session from "../models/sessionmodel.js";
 
 export const getDirectories = async (req, res, next) => {
 
-    const { uid, email } = JSON.parse(req.signedCookies.token);
+    let sid = req.signedCookies.sid;
+    const s = await Session.findById(sid);
+    const uid = s.userId;
 
     try {
         const dir = await DirModel.findOne({ userId: uid });
@@ -53,7 +57,9 @@ export const getDirectories = async (req, res, next) => {
 
 export const makeDirecotry = async (req, res, next) => {
 
-    let { uid } = JSON.parse(req.signedCookies.token);
+    let sid = req.signedCookies.sid;
+    const s = await Session.findById(sid);
+    const uid = s.userId;
     const dirname = req.headers.dirname || "New Folder";
     const session = await mongoose.startSession();
 
@@ -135,7 +141,6 @@ async function deleteNestedDirectories(directoryIds) {
 export const deleteDirectory = async (req, res, next) => {
 
     try {
-        const { uid } = JSON.parse(req.signedCookies.token);
         const id = req.params.id;
         const dirData = await DirModel.findById(id);
 
