@@ -1,6 +1,6 @@
 import express from 'express';
 import isAuthorized from '../middlewares/auth.js';
-import { getUserDetails, loginUser, logoutUser, registerUser } from '../controllers/usercontroller.js';
+import { getUserDetails, loginUser, logoutUser, registerUser, logoutAllUser, sendOtpToEmail, verifyOtp } from '../controllers/usercontroller.js';
 
 
 const router = express.Router();
@@ -11,6 +11,12 @@ router.post("/register", registerUser);
 
 router.post('/login', loginUser);
 
+router.post('/send-otp', sendOtpToEmail);
+
+router.post('/verify-otp', verifyOtp);
+
 router.post('/logout', logoutUser);
+
+router.post('/logoutall', logoutAllUser);
 
 export default router;
