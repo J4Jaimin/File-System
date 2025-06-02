@@ -1,36 +1,46 @@
-import crypto from 'crypto';
-import { readFile } from 'fs/promises';
-import jwt from 'jsonwebtoken';
+import nodemailer from 'nodemailer';
 
-// const hash = crypto.createHash('sha256').update(Buffer.from('Hello World')).digest('base64url');
+const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 587,
+    auth: {
+        user: "jaiminrana1102@gmail.com",
+        pass: "quci lsws dmpb pbwp",
+    },
+});
 
-// console.log(hash);
+const info = await transporter.sendMail({
+    from: '"Jaimin Rana" <jaiminrana1102@gmail.com>',
+    to: "jaiminrana1109@gmail.com",
+    subject: "Msg from Jaimin Rana.",
+    html: "<b><h2> Hello Jaimin Rana,</h2></b>"
+})
 
-// const fileData = await readFile('./http.js');
+console.log("Message sent: %s", info.messageId);
 
-// const newData = `blob ${fileData.length}\0${fileData}`;
 
-// const hash = crypto.createHash("sha1").update(newData).digest("hex");
+// import bcrypt from 'bcrypt';
+// import fs from 'fs';
+// import crypto from 'crypto';
 
-// console.log(hash);
+// const filePath = '/home/jaiminrana/Music/resumes/Jaimin_resume.pdf'; // <-- apna file path daal
 
-// const token = jwt.sign({
-//     name: 'Jai'
-// }, 'secret', {
-//     algorithm: 'HS256',
-//     expiresIn: 10
+// // Step 1: Read file
+// const fileBuffer = fs.readFileSync(filePath);
+// const fileContent = fileBuffer.toString(); // convert binary to string
+
+// const saltRounds = 10;
+
+// bcrypt.hash(fileContent, saltRounds, (err, hash) => {
+//     if (err) {
+//         console.error('Error hashing file:', err);
+//         return;
+//     }
+//     console.log('Bcrypt hash of file:', hash);
 // });
 
-// console.log(token);
+// const hash = crypto.createHash('MD5').update(fileContent).digest('hex');
 
-// const data = Buffer.from("4VMaEAaF3waU2Wj1UfO2fS1UEM4ealE4Q7XXuHqwLP8", "base64url").toString();
+// console.log('MD5 hash of file:', hash);
 
-// const signature = crypto.createHmac("sha256", "secret").update("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFpIiwiaWF0IjoxNzQ2NDI5MDAxfQ").digest("base64url");
 
-// console.log(signature);
-
-// const verification = jwt.decode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSmFpIiwiaWF0IjoxNzQ2NDI5NjMxLCJleHAiOjE3NDY0Mjk2NDF9.hBJB74eCbTyFvDpbvURfSGdgsZNhc70RqWu--jkmFKU",
-//     "secret"
-// );
-
-// console.log(verification);

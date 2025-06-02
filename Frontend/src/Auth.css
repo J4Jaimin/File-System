@@ -93,3 +93,96 @@
   text-decoration: underline;
   color: #004a99; /* darker color on hover */
 }
+
+/* Wrapper to hold input + button inside it */
+.input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Input with right padding for the button */
+.input-wrapper .input {
+  padding-right: 90px; /* Enough space for button */
+}
+
+/* The inline button inside the input */
+.verify-btn {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translateY(-50%);
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.verify-btn:hover {
+  opacity: 0.9;
+  background-color: #218838;
+}
+
+.submit-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.verify-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.otp-modal {
+  position: fixed; /* Must be fixed to cover screen */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* Dimming effect */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.otp-box {
+  background-color: #fff;
+  margin-bottom: 10%;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+  min-width: 350px;
+  text-align: center;
+}
+
+
+/* OTP input */
+.otp-input {
+  width: 90%;
+  padding: 10px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Buttons inside modal */
+.modal-btn {
+  margin: 5px;
+  padding: 8px 16px;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-btn.cancel {
+  background-color: gray;
+  cursor: pointer;
+}
+

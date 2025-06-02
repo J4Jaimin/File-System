@@ -3,6 +3,8 @@ import crypto, { pbkdf2, pbkdf2Sync } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 import Session from '../models/sessionmodel.js';
+import nodemailer from 'nodemailer';
+import OtpModel from '../models/otpmodel.js';
 
 export const getUserDetails = (req, res, next) => {
     res.status(200).json({
@@ -122,9 +124,97 @@ export const loginUser = async (req, res, next) => {
     }
 }
 
-export const logoutUser = (req, res, next) => {
+export const sendOtpToEmail = async (req, res, next) => {
+
+    const email = req.body.email;
+
+    try {
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 587,
+            auth: {
+                user: "jaiminrana1102@gmail.com",
+                pass: "quci lsws dmpb pbwp",
+            },
+        });
+
+        const OTP = crypto.randomInt(1000, 9999).toString();
+
+        await OtpModel.create({ otp: OTP });
+
+        const info = await transporter.sendMail({
+            from: '"Own Cloud" <owncloud@support.com>',
+            to: `${email}`,
+            subject: "Email Verificaion OTP",
+            html: "<h2>Your OTP for email verification: " + OTP + "</h2>"
+        })
+
+        console.log("Message sent: %s", info.messageId);
+
+        res.status(200).json({
+            message: "OTP sent successfully",
+            success: true
+        });
+
+    } catch (error) {
+        console.log(error);
+        next();
+    }
+}
+
+export const verifyOtp = async (req, res, next) => {
+
+    const { otp } = req.body;
+
+    try {
+        const otpData = await OtpModel.findOne({ otp });
+        if (!otpData) {
+            return res.status(400).json({
+                error: "OTP Expired or Invalid"
+            });
+        }
+        else {
+            res.status(200).json({
+                message: "OTP verified successfully",
+                verified: true
+            });
+            await OtpModel.deleteOne({ otp });
+        }
+    } catch (error) {
+        console.log(error);
+        next();
+    }
+}
+
+export const logoutUser = async (req, res, next) => {
+
+    const sessionId = req.signedCookies.sid;
+
+    if (!sessionId) {
+        return res.status(400).json({
+            error: "No session found"
+        });
+    }
+
+    await Session.findByIdAndDelete({ _id: sessionId });
+
     res.clearCookie('sid');
     res.status(200).json({
         message: "User logged out successfully"
+    });
+}
+
+export const logoutAllUser = async (req, res, next) => {
+    const sessionId = req.signedCookies.sid;
+    const session = await Session.findById(sessionId);
+    if (!session) {
+        return res.status(400).json({
+            error: "No session found"
+        });
+    }
+    await Session.deleteMany({ userId: session.userId });
+    res.clearCookie('sid');
+    res.status(200).json({
+        message: "User logged out from all devices successfully"
     });
 }

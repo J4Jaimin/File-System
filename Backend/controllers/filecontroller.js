@@ -99,8 +99,11 @@ export const deleteFile = async (req, res, next) => {
     try {
         const file = await FileModel.findById(id);
         const directory = await DirModel.findById(file.dirId);
+        const sid = req.signedCookies.sid;
+        const s = await Session.findById(sid);
+        const uid = s.userId;
 
-        if (JSON.parse(req.signedCookies.token).uid !== String(directory.userId)) {
+        if (uid.toString() !== directory.userId.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to delete this file."
             });
