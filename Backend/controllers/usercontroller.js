@@ -186,6 +186,55 @@ export const verifyOtp = async (req, res, next) => {
     }
 }
 
+export const googleAuth = async (req, res, next) => {
+    
+    const { email, name, picture } = req.body;
+
+    try {
+        let user = await UserModel.findOne({ email });
+
+        if (user) {
+            const session = await Session.create({ userId: user._id });
+
+            const sessions = await Session.find({ userId: user._id });
+
+            if (sessions.length > 2) {
+                const oldestSession = sessions.reduce((oldest, current) => {
+                    return oldest.createdAt < current.createdAt ? oldest : current;
+                });
+
+                await Session.deleteOne({ _id: oldestSession._id });
+            }
+
+            res.cookie("sid", session.id, {
+                httpOnly: true,
+                signed: true,
+                maxAge: 60 * 60 * 1000
+            });
+
+            return res.status(200).json({
+                message: "User logged in successfully"
+            });
+        } else {
+            user = {
+                name,
+                email,
+                picture
+            }
+
+            await UserModel.create(user);
+
+            return res.status(200).json({
+                message: "User logged in successfully",
+                user
+            });
+        }
+    } catch (error) {
+        console.log(error);
+        next();
+    }
+}
+
 export const logoutUser = async (req, res, next) => {
 
     const sessionId = req.signedCookies.sid;

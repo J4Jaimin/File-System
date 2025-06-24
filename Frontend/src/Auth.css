@@ -186,3 +186,21 @@
   cursor: pointer;
 }
 
+.separator {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.line {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #ccc;
+}
+
+.or-text {
+  margin: 0 10px;
+  color: #666;
+  font-weight: 500;
+}
+

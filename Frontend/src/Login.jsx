@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import ContinueWithGoogle from "./components/ContinueWithGoogle";
 import "./Auth.css";
 
 const Login = () => {
@@ -103,6 +104,15 @@ const Login = () => {
           Login
         </button>
       </form>
+
+      {/* Separator */}
+    <div className="separator">
+      <div className="line" />
+      <span className="or-text">or</span>
+      <div className="line" />
+    </div>
+
+    <ContinueWithGoogle />
 
       {/* Link to the register page */}
       <p className="link-text">
