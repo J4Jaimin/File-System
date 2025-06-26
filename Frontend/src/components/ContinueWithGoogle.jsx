@@ -1,12 +1,16 @@
 import { useGoogleLogin } from "@react-oauth/google";
 import "./ContinueWithGoogle.css";
+import { Link, useNavigate } from "react-router-dom";
 
 const BASE_URL = "http://localhost:4000"; // "https://jai-drive.onrender.com";
 
+
 const continueWithGoogle = () => {
+
+  const navigate = useNavigate();
+
   const login = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
-      console.log("Google Login Success", tokenResponse);
 
       const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
         headers: {
@@ -28,6 +32,14 @@ const continueWithGoogle = () => {
         },
         credentials: "include",
       });
+
+      if(loggeedInResponse) {
+        const data = await loggeedInResponse.json();
+        navigate("/");
+      }
+      else {
+        console.error("Failed to log in with Google");
+      }
 
     },
     onError: () => {

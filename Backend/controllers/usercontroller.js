@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import crypto, { pbkdf2, pbkdf2Sync } from 'crypto';
+import crypto, { pbkdf2 } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 import Session from '../models/sessionmodel.js';
@@ -189,7 +189,8 @@ export const verifyOtp = async (req, res, next) => {
 export const googleAuth = async (req, res, next) => {
     
     const { email, name, picture } = req.body;
-
+    const session = await mongoose.startSession();
+    
     try {
         let user = await UserModel.findOne({ email });
 
@@ -216,20 +217,55 @@ export const googleAuth = async (req, res, next) => {
                 message: "User logged in successfully"
             });
         } else {
-            user = {
-                name,
-                email,
-                picture
+
+            session.startTransaction();
+
+            const dir = {
+                name: `root-${email}`,
+                parent: null,
+                files: [],
+                directories: [],
             }
 
-            await UserModel.create(user);
+            const insertedDir = await DirModel.create([dir], { session });
+
+            const user = {
+                name,
+                email,
+                password: crypto.randomBytes(16).toString('hex'),
+                picture,
+                rootdir: insertedDir[0]._id
+            }
+
+            const insertedUser = await UserModel.create([user], { session });
+
+            await DirModel.updateOne(
+                { _id: insertedDir[0]._id },
+                { $set: { userId: insertedUser[0]._id } },
+                { session }
+            );
+
+            
+            const s = await Session.create({ userId: insertedUser[0]._id });
+            
+            res.cookie("sid", s.id, {
+                httpOnly: true,
+                signed: true,
+                maxAge: 60 * 60 * 1000
+            });
+            
+            await session.commitTransaction();
+            session.endSession();
 
             return res.status(200).json({
                 message: "User logged in successfully",
                 user
             });
-        }
+
+            }
     } catch (error) {
+        session.abortTransaction();
+        session.endSession();
         console.log(error);
         next();
     }
