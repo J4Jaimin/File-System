@@ -102,7 +102,7 @@ const Register = () => {
   const handleEmailVerify = async () => {
     setIsVerifying(true);
     try {
-      const response = await fetch(`${BASE_URL}/user/send-otp`, {
+      const response = await fetch(`${BASE_URL}/auth/send-otp`, {
         method: "POST",
         body: JSON.stringify({ email: formData.email }),
         headers: { "Content-Type": "application/json" },
@@ -123,7 +123,7 @@ const Register = () => {
   const handleVerifyOtp = async () => {
     try {
 
-      const response = await fetch(`${BASE_URL}/user/verify-otp`, {
+      const response = await fetch(`${BASE_URL}/auth/verify-otp`, {
         method: "POST",
         body: JSON.stringify({ otp }),
         headers: { "Content-Type": "application/json" },

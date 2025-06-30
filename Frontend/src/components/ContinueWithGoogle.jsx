@@ -20,7 +20,7 @@ const continueWithGoogle = () => {
 
       const userInfo = await response.json();
 
-      const loggeedInResponse = await fetch(`${BASE_URL}/user/google/auth`, {
+      const loggeedInResponse = await fetch(`${BASE_URL}/auth/google-auth`, {
         method: "POST",
         body: JSON.stringify({
           email: userInfo.email,
