@@ -4,6 +4,7 @@ import fileRoutes from './routes/fileroutes.js';
 import cookieParser from "cookie-parser";
 import dirRoutes from './routes/dirroutes.js';
 import userRoutes from './routes/userroutes.js';
+import authRoutes from './routes/authroutes.js';
 import isAuthorized from './middlewares/auth.js';
 import { connectDB } from "./config/Dbconnection.js";
 
@@ -35,6 +36,7 @@ try {
   app.use('/file', isAuthorized, fileRoutes);
   app.use('/directory', isAuthorized, dirRoutes);
   app.use('/user', userRoutes);
+  app.use('/auth', authRoutes);
 
   app.use((err, req, res, next) => {
     res.status(err.status || 500).json({
