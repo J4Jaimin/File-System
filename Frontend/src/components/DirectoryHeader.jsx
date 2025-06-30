@@ -17,12 +17,13 @@ function DirectoryHeader({
   disabled = false,
 }) {
   // Use a constant for the API base URL
-  const BASE_URL = "http://localhost:4000" // "https://jai-drive.onrender.com";
+  const BASE_URL = "http://localhost:4000"; // "https://jai-drive.onrender.com";
 
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
   const [userName, setUserName] = useState("Guest User");
   const [userEmail, setUserEmail] = useState("guest@example.com");
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const userMenuRef = useRef(null);
   const navigate = useNavigate();
@@ -41,6 +42,7 @@ function DirectoryHeader({
           // Set user info if logged in
           setUserName(data.name);
           setUserEmail(data.email);
+          setProfilePicture(data.picture);
           setLoggedIn(true);
         } else if (response.status === 401) {
           // User not logged in
@@ -80,6 +82,7 @@ function DirectoryHeader({
         setLoggedIn(false);
         setUserName("Guest User");
         setUserEmail("guest@example.com");
+        setProfilePicture(null);
         navigate("/login");
       } else {
         console.error("Logout failed");
@@ -165,14 +168,25 @@ function DirectoryHeader({
 
         {/* User Icon & Dropdown Menu */}
         <div className="user-menu-container" ref={userMenuRef}>
-          <button
-            className="icon-button"
-            title="User Menu"
-            onClick={handleUserIconClick}
-            disabled={disabled}
-          >
-            <FaUser />
-          </button>
+          {!profilePicture ? (
+            <button
+              className="icon-button"
+              title="User Menu"
+              onClick={handleUserIconClick}
+              disabled={disabled}
+            >
+              <FaUser />
+            </button>
+          ) : (
+            <button
+              className="icon-button"
+              title="User Menu"
+              onClick={handleUserIconClick}
+              disabled={disabled}
+            >
+              <img src={profilePicture} style={{ borderRadius: "50%", height: "3.6vh", width: "1.8vw" }} className="user-icon" alt="Profile Pic" />
+            </button>
+          )}
 
           {showUserMenu && (
             <div className="user-menu">

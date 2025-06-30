@@ -9,7 +9,8 @@ import OtpModel from '../models/otpmodel.js';
 export const getUserDetails = (req, res, next) => {
     res.status(200).json({
         name: req.user.name,
-        email: req.user.email
+        email: req.user.email,
+        picture: req.user.picture
     });
 }
 export const registerUser = async (req, res, next) => {
