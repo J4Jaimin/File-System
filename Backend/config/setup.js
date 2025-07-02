@@ -48,6 +48,9 @@ try {
                     role: {
                         bsonType: 'string',
                         enum: ['admin', 'manager', 'user']
+                    },
+                    __v: {
+                        bsonType: 'int'
                     }
                 },
                 additionalProperties: false
@@ -91,6 +94,9 @@ try {
                     },
                     userId: {
                         bsonType: 'objectId'
+                    },
+                    __v: {
+                        bsonType: 'int'
                     }
                 },
                 additionalProperties: false
@@ -123,6 +129,9 @@ try {
                     },
                     dirId: {
                         bsonType: 'objectId'
+                    },
+                    __v: {
+                        bsonType: 'int'
                     }
                 },
                 additionalProperties: false

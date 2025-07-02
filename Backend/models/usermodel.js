@@ -28,8 +28,6 @@ const userModel = new mongoose.Schema({
         enum: ['admin', 'manager', 'user'],
         default: 'user'
     }
-}, {
-    versionKey: false
 });
 
 userModel.pre('save', async function (next) {

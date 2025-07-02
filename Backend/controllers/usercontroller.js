@@ -124,19 +124,7 @@ export const loginUser = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
 
-    const userId = req.body.userId;
-    let sessionId;
-
-    if(userId) {
-        const session = await Session.findOne({ userId: userId });
-        if (session) {
-            sessionId = session._id;
-        }
-    }
-
-    if (!sessionId) {
-        sessionId = req.signedCookies.sid;
-    }
+    const sessionId = req.signedCookies.sid;
 
     if (!sessionId) {
         return res.status(400).json({
