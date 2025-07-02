@@ -22,7 +22,14 @@ const userModel = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'directories',
         required: true
+    },
+    role: {
+        type: String,
+        enum: ['admin', 'manager', 'user'],
+        default: 'user'
     }
+}, {
+    versionKey: false
 });
 
 userModel.pre('save', async function (next) {

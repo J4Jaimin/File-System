@@ -18,6 +18,7 @@ try {
                     '_id',
                     'name',
                     'email',
+                    'picture',
                     'password',
                     'rootdir'
                 ],
@@ -33,6 +34,9 @@ try {
                         bsonType: 'string',
                         pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$'
                     },
+                    picture: {
+                        bsonType: 'string'
+                    },
                     password: {
                         bsonType: 'string',
                         minLength: 4,
@@ -40,6 +44,10 @@ try {
                     },
                     rootdir: {
                         bsonType: 'objectId'
+                    },
+                    role: {
+                        bsonType: 'string',
+                        enum: ['admin', 'manager', 'user']
                     }
                 },
                 additionalProperties: false

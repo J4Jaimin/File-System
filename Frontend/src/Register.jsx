@@ -253,7 +253,7 @@ const Register = () => {
       <div className="line" />
     </div>
 
-    <ContinueWithGoogle />
+    <ContinueWithGoogle type="register" />
 
       {/* Link to the login page */}
       <p className="link-text">

@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 const BASE_URL = "http://localhost:4000"; // "https://jai-drive.onrender.com";
 
 
-const continueWithGoogle = () => {
+const continueWithGoogle = ({type}) => {
 
   const navigate = useNavigate();
 
@@ -54,7 +54,9 @@ const continueWithGoogle = () => {
         alt="Google"
         className="google-icon"
       />
-      Continue with Google
+      {
+        type === "register" ? "Sign up with Google" : "Sign in with Google"
+      }
     </button>
   );
 };

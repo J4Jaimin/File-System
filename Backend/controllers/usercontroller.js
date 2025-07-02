@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
-import crypto, { pbkdf2 } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 import Session from '../models/sessionmodel.js';
-import nodemailer from 'nodemailer';
-import OtpModel from '../models/otpmodel.js';
 
 export const getUserDetails = (req, res, next) => {
     res.status(200).json({
@@ -89,7 +86,7 @@ export const loginUser = async (req, res, next) => {
             });
         }
 
-        const isPasswordCorrect = user.comparePassword(password);
+        const isPasswordCorrect = await user.comparePassword(password);
 
         if (!isPasswordCorrect) {
             return res.status(404).json({
@@ -127,7 +124,19 @@ export const loginUser = async (req, res, next) => {
 
 export const logoutUser = async (req, res, next) => {
 
-    const sessionId = req.signedCookies.sid;
+    const userId = req.body.userId;
+    let sessionId;
+
+    if(userId) {
+        const session = await Session.findOne({ userId: userId });
+        if (session) {
+            sessionId = session._id;
+        }
+    }
+
+    if (!sessionId) {
+        sessionId = req.signedCookies.sid;
+    }
 
     if (!sessionId) {
         return res.status(400).json({

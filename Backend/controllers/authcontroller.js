@@ -114,8 +114,8 @@ export const googleAuth = async (req, res, next) => {
             const user = {
                 name,
                 email,
-                password: crypto.randomBytes(16).toString('hex'),
                 picture,
+                password: crypto.randomBytes(16).toString('hex'),
                 rootdir: insertedDir[0]._id
             }
 

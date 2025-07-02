@@ -24,6 +24,8 @@ const dirModel = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'
     }
+}, {
+    versionKey: false,
 });
 
 export default mongoose.model('directories', dirModel);

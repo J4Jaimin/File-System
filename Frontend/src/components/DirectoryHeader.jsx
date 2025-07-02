@@ -184,7 +184,7 @@ function DirectoryHeader({
               onClick={handleUserIconClick}
               disabled={disabled}
             >
-              <img src={profilePicture} style={{ borderRadius: "50%", height: "3.6vh", width: "1.8vw" }} className="user-icon" alt="Profile Pic" />
+              <img src={profilePicture} style={{ borderRadius: "50%", height: "32px", width: "32px" }} className="user-icon" alt="Profile Pic" />
             </button>
           )}
 
