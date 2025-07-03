@@ -141,7 +141,7 @@ async function deleteNestedDirectories(directoryIds) {
 export const deleteDirectory = async (req, res, next) => {
 
     try {
-        const id = req.params.id;
+        const id = req.params.id || req.dirId;
         const dirData = await DirModel.findById(id);
 
         if (!dirData) {
@@ -166,9 +166,11 @@ export const deleteDirectory = async (req, res, next) => {
 
         await DirModel.deleteOne({ _id: id });
 
-        res.status(200).json({
-            message: "Directory deleted successfully"
-        });
+        if(!req.dirId) {
+            res.status(200).json({
+                message: "Directory deleted successfully"
+            });
+        }
 
     } catch (err) {
         console.log(err);

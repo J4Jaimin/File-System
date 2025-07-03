@@ -1,6 +1,7 @@
 import express from 'express';
-import { getAllUsers, logoutParticularUser } from '../controllers/admincontroller.js';
+import { getAllUsers, logoutParticularUser, deleteParticularUser } from '../controllers/admincontroller.js';
 import isAuthorized from '../middlewares/auth.js';
+import { deleteDirectory } from '../controllers/dircontroller.js';
 
 const router = express.Router();
 
@@ -20,6 +21,24 @@ router.get('/users', isAuthorized, (req, res, next) => {
     });
 
 }, getAllUsers);
+
+router.post('/delete-user', isAuthorized, (req, res, next) => {
+
+    if(!req.user) {
+        return res.status(401).json({
+            message: "You are not logged in."
+        });
+    }
+
+    if(req.user.role === 'admin') {
+        return next();
+    }
+
+    return res.status(403).json({
+        message: "You are not authorized to delete a user."
+    });
+
+}, deleteParticularUser, deleteDirectory);
 
 router.post('/logout-user', isAuthorized, (req, res, next) => {
 
