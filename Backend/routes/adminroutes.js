@@ -48,7 +48,7 @@ router.post('/logout-user', isAuthorized, (req, res, next) => {
         });
     }
 
-    if(req.user.role === 'admin') {
+    if(req.user.role !== 'user') {
         return next();
     }
 

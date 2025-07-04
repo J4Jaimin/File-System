@@ -85,6 +85,8 @@ export default function UsersPage() {
   return (
     <div className="users-container">
       <h1 className="title">All Users</h1>
+      <p>{userRole}</p>
+      <p>{users.length} users found</p>
       <table className="user-table">
         <thead>
           <tr>
