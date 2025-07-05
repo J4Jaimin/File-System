@@ -109,7 +109,7 @@ export const loginUser = async (req, res, next) => {
         res.cookie("sid", session.id, {
             httpOnly: true,
             signed: true,
-            maxAge: 60 * 60 * 1000
+            maxAge: 60 * 60 * 24 * 7 * 1000
         });
 
         res.status(200).json({

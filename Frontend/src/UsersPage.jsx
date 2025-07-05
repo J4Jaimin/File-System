@@ -10,7 +10,8 @@ export default function UsersPage() {
 
   const logoutUser = async (user) => {
     
-    const {id, email} = user;
+    const userId = user._id;
+    const email = user.email;
     const logoutConfirmation = window.confirm(`Are you sure you want to log out ${user.name} with email: ${email}?`);
 
     if (!logoutConfirmation) {
@@ -44,10 +45,18 @@ export default function UsersPage() {
     }
   };
 
-  const deleteUser = async (userId) => {
-    alert(`Deleting user with ID: ${userId}`);
+  const deleteUser = async (user) => {
+
+    const userId = user._id;
+    const email = user.email;
+    const logoutConfirmation = window.confirm(`Are you sure you want to log out ${user.name} with email: ${email}?`);
+
+    if (!logoutConfirmation) {
+      return;
+    }
+
     const response = await fetch('http://localhost:4000/admin/delete-user', {
-      method: 'POST',
+      method: 'DELETE',
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
@@ -122,7 +131,7 @@ export default function UsersPage() {
               {userRole === 'admin' && <td>
                 <button
                   className="delete-button"
-                  onClick={() => deleteUser(user._id)}
+                  onClick={() => deleteUser(user)}
                   disabled={!user.isLoggedIn || (userRole === 'admin' && user.role === 'admin') || (userRole === 'manager' && user.role !== 'user')}
                 >
                   Delete

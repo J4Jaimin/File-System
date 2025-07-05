@@ -76,7 +76,7 @@ export const logoutParticularUser = async (req, res) => {
         (req.user.role === 'manager' && user.role !== 'user') || 
          (req.user.role === 'user')) {
         return res.status(403).json({
-            message: 'You are not authorized to logout a user'
+            message: 'You are not authorized to logout a user.'
         });
     }
 
