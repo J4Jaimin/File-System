@@ -21,7 +21,8 @@ export const getAllUsers = async (req, res) => {
 
         const dataToBeSend = {
             users: usersWithLoginStatus,
-            role: req.user.role
+            role: req.user.role,
+            name: req.user.name
         }
 
         res.status(200).json(dataToBeSend);

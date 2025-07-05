@@ -5,7 +5,8 @@ import './UsersPage.css';
 export default function UsersPage() {
 
   const [users, setUsers] = useState([]);
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState('user');
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
 
   const logoutUser = async (user) => {
@@ -92,6 +93,7 @@ export default function UsersPage() {
     console.log(data);
     setUsers(data.users);
     setUserRole(data.role);
+    setUserName(data.name);
   };
 
   useEffect(() => {
@@ -101,7 +103,7 @@ export default function UsersPage() {
   return (
     <div className="users-container">
       <h1 className="title">All Users</h1>
-      <p>{userRole}</p>
+      <p><b>{userName}:</b> (<i>{userRole}</i>)</p>
       <p>{users.length} users found</p>
       <table className="user-table">
         <thead>
