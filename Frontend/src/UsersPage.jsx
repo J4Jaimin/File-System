@@ -8,8 +8,15 @@ export default function UsersPage() {
   const [userRole, setUserRole] = useState('');
   const navigate = useNavigate();
 
-  const logoutUser = async (userId) => {
-    alert(`Logging out user with ID: ${userId}`);
+  const logoutUser = async (user) => {
+    
+    const {id, email} = user;
+    const logoutConfirmation = window.confirm(`Are you sure you want to log out ${user.name} with email: ${email}?`);
+
+    if (!logoutConfirmation) {
+      return;
+    }
+
     const response = await fetch('http://localhost:4000/admin/logout-user', {
       method: 'POST',
       credentials: 'include',
@@ -106,7 +113,7 @@ export default function UsersPage() {
               <td>
                 <button
                   className="logout-button"
-                  onClick={() => logoutUser(user._id)}
+                  onClick={() => logoutUser(user)}
                   disabled={!user.isLoggedIn || (userRole === 'admin' && user.role === 'admin') || (userRole === 'manager' && user.role !== 'user')}
                 >
                   Logout

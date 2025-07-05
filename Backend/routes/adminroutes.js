@@ -22,7 +22,7 @@ router.get('/users', isAuthorized, (req, res, next) => {
 
 }, getAllUsers);
 
-router.post('/delete-user', isAuthorized, (req, res, next) => {
+router.delete('/delete-user', isAuthorized, (req, res, next) => {
 
     if(!req.user) {
         return res.status(401).json({

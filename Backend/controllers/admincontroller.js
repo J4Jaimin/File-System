@@ -1,7 +1,14 @@
 import User from '../models/usermodel.js';
 import Session from '../models/sessionmodel.js';
 
-export const getAllUsers = async (req, res, next) => {
+export const getAllUsers = async (req, res) => {
+
+    if(req.user.role === 'user') {
+        return res.status(403).json({
+            message: 'You are not authorized to access this resource'
+        });
+    }
+
     try {
         const users = await User.find({}, '-password -__v').lean();
         const usersWithLoginStatus = await Promise.all(users.map(async (user) => {
@@ -29,6 +36,12 @@ export const deleteParticularUser = async (req, res, next) => {
 
     const { userId } = req.body;
 
+    if(req.user.role !== 'admin') {
+        return res.status(403).json({
+            message: 'You are not authorized to delete a user'
+        });
+    }
+
     try {
         const user = await User.findByIdAndDelete(userId);
         await Session.deleteMany({ userId });
@@ -50,9 +63,22 @@ export const deleteParticularUser = async (req, res, next) => {
     }
 }
 
-export const logoutParticularUser = async (req, res, next) => {
+export const logoutParticularUser = async (req, res) => {
 
     const { userId } = req.body;
+    const user = await User.findById(userId);
+
+    if(!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    if((req.user.role === 'admin' && user.role === 'admin') || 
+        (req.user.role === 'manager' && user.role !== 'user') || 
+         (req.user.role === 'user')) {
+        return res.status(403).json({
+            message: 'You are not authorized to logout a user'
+        });
+    }
 
     try {
         const session = await Session.findOneAndDelete({ userId });
