@@ -46,32 +46,71 @@ export default function UsersPage() {
     }
   };
 
+  // const deleteUser = async (user) => {
+
+  //   const userId = user._id;
+  //   const email = user.email;
+  //   const logoutConfirmation = window.confirm(`Are you sure you want to log out ${user.name} with email: ${email}?`);
+
+  //   if (!logoutConfirmation) {
+  //     return;
+  //   }
+
+  //   const response = await fetch('http://localhost:4000/admin/delete-user', {
+  //     method: 'DELETE',
+  //     credentials: 'include',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ userId })
+  //   });
+
+  //   if (response.ok) {
+  //     setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
+  //     console.log(`User with ID: ${userId} deleted successfully`);
+  //   } else {
+  //     console.log(`Failed to delete user with ID: ${userId}`);
+  //   }
+  // }
+
   const deleteUser = async (user) => {
+  const userId = user._id;
+  const email = user.email;
 
-    const userId = user._id;
-    const email = user.email;
-    const logoutConfirmation = window.confirm(`Are you sure you want to log out ${user.name} with email: ${email}?`);
+  const deleteType = window.prompt(
+    `How do you want to delete ${user.name} (Email: ${email})?\nType "soft" for Soft Delete or "hard" for Hard Delete`
+  );
 
-    if (!logoutConfirmation) {
-      return;
-    }
-
-    const response = await fetch('http://localhost:4000/admin/delete-user', {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ userId })
-    });
-
-    if (response.ok) {
-      setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
-      console.log(`User with ID: ${userId} deleted successfully`);
-    } else {
-      console.log(`Failed to delete user with ID: ${userId}`);
-    }
+  if (!deleteType || (deleteType !== "soft" && deleteType !== "hard")) {
+    alert("Invalid input. Type 'soft' or 'hard' to proceed.");
+    return;
   }
+
+  const confirmation = window.confirm(
+    `Are you sure you want to perform a **${deleteType.toUpperCase()} DELETE** on ${user.name}?`
+  );
+
+  if (!confirmation) {
+    return;
+  }
+
+  const response = await fetch('http://localhost:4000/admin/delete-user', {
+    method: 'DELETE',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ userId, type: deleteType }) // send the type too
+  });
+
+  if (response.ok) {
+    setUsers((prevUsers) => prevUsers.filter((u) => u._id !== userId));
+    console.log(`${deleteType.toUpperCase()} delete successful for ID: ${userId}`);
+  } else {
+    console.log(`Failed to ${deleteType} delete user with ID: ${userId}`);
+  }
+};
+
 
   const fetchUsers = async () => {
     const response = await fetch('http://localhost:4000/admin/users', {
@@ -134,7 +173,7 @@ export default function UsersPage() {
                 <button
                   className="delete-button"
                   onClick={() => deleteUser(user)}
-                  disabled={!user.isLoggedIn || (userRole === 'admin' && user.role === 'admin') || (userRole === 'manager' && user.role !== 'user')}
+                  disabled={(userRole === 'admin' && user.role === 'admin') || (userRole === 'manager' && user.role !== 'user')}
                 >
                   Delete
                 </button>

@@ -10,7 +10,7 @@ export const getAllUsers = async (req, res) => {
     }
 
     try {
-        const users = await User.find({}, '-password -__v').lean();
+        const users = await User.find({isDeleted: false}, '-password -__v').lean();
         const usersWithLoginStatus = await Promise.all(users.map(async (user) => {
             const session = await Session.findOne({ userId: user._id });
             return {
@@ -35,24 +35,22 @@ export const getAllUsers = async (req, res) => {
 
 export const deleteParticularUser = async (req, res, next) => {
 
-    const { userId } = req.body;
-
-    if(req.user.role !== 'admin') {
-        return res.status(403).json({
-            message: 'You are not authorized to delete a user'
-        });
-    }
+    const { userId, type } = req.body;
 
     try {
-        const user = await User.findByIdAndDelete(userId);
-        await Session.deleteMany({ userId });
-        req.dirId = user.rootdir;
-
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+        if(type == 'soft') {
+            await User.findByIdAndUpdate(userId, { isDeleted: true });
+        }
+        else {
+            const user = await User.findByIdAndDelete(userId);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            req.dirId = user.rootdir;
+            next();
         }
 
-        next();
+        await Session.deleteMany({ userId });
 
         res.status(200).json({
              message: 'User deleted successfully' 

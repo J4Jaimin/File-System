@@ -18,7 +18,6 @@ try {
                     '_id',
                     'name',
                     'email',
-                    'picture',
                     'password',
                     'rootdir'
                 ],
@@ -39,8 +38,7 @@ try {
                     },
                     password: {
                         bsonType: 'string',
-                        minLength: 4,
-                        maxLength: 8
+                        minLength: 4
                     },
                     rootdir: {
                         bsonType: 'objectId'
@@ -48,6 +46,10 @@ try {
                     role: {
                         bsonType: 'string',
                         enum: ['admin', 'manager', 'user']
+                    },
+                    isDeleted: {
+                        bsonType: 'bool',
+                        description: "Must be a boolean value indicating if the user is deleted"
                     },
                     __v: {
                         bsonType: 'int'
@@ -70,8 +72,7 @@ try {
                     'name',
                     'parent',
                     'files',
-                    'directories',
-                    'userId'
+                    'directories'
                 ],
                 properties: {
                     _id: {

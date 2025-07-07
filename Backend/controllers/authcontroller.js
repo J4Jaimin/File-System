@@ -84,6 +84,13 @@ export const googleAuth = async (req, res, next) => {
         let user = await UserModel.findOne({ email });
 
         if (user) {
+
+            if(user.isDeleted) {
+                return res.status(403).json({
+                    error: "Your account has been deleted. Please contact support admin."
+                });
+            }
+            
             const session = await Session.create({ userId: user._id });
 
             const sessions = await Session.find({ userId: user._id });

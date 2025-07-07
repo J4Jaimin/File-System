@@ -27,6 +27,10 @@ const userModel = new mongoose.Schema({
         type: String,
         enum: ['admin', 'manager', 'user'],
         default: 'user'
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
     }
 });
 

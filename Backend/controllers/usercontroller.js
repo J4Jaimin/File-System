@@ -14,6 +14,20 @@ export const registerUser = async (req, res, next) => {
 
     const { name, email, password } = req.body;
 
+    if (!name || !email || !password) {
+        return res.status(400).json({
+            error: "Name, Email and Password are required"
+        });
+    }
+
+    const user = await UserModel.findOne({ email });
+
+    if (user) {
+        return res.status(400).json({
+            error: "User with this email already exists."
+        });
+    }
+
     const session = await mongoose.startSession();
 
     try {
@@ -84,6 +98,12 @@ export const loginUser = async (req, res, next) => {
             return res.status(404).json({
                 error: "Invalid credentials"
             });
+        }
+
+        if(user.isDeleted) {
+            return res.status(403).json({
+                error: "Your account has been deleted. Please contact support admin."
+            })
         }
 
         const isPasswordCorrect = await user.comparePassword(password);
