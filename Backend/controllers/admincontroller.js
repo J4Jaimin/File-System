@@ -11,6 +11,7 @@ export const getAllUsers = async (req, res) => {
 
     try {
         const users = await User.find({isDeleted: false}, '-password -__v').lean();
+        const deletedUsers = await User.find({isDeleted: true}, '-password -__v').lean();
         const usersWithLoginStatus = await Promise.all(users.map(async (user) => {
             const session = await Session.findOne({ userId: user._id });
             return {
@@ -21,6 +22,7 @@ export const getAllUsers = async (req, res) => {
 
         const dataToBeSend = {
             users: usersWithLoginStatus,
+            deletedUsers: deletedUsers,
             role: req.user.role,
             name: req.user.name
         }
@@ -58,6 +60,57 @@ export const deleteParticularUser = async (req, res, next) => {
 
     } catch (error) {
         console.error('Error deleting user:', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+export const changeRole = async (req, res) => {
+
+    const userId = req.params.userId;
+    const { role } = req.body;
+
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.role = role;
+        await user.save();
+
+        res.status(200).json({ 
+            message: 'User role updated successfully' 
+        });
+
+    } catch (error) {
+        console.error('Error changing user role:', error);
+        next();
+    }
+}
+
+export const restoreUser = async (req, res) => {
+
+    const userId = req.body.userId; 
+
+    try {
+        const user = await User.findById(userId);   
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        if (!user.isDeleted) {
+            return res.status(400).json({ message: 'User is not deleted' });
+        }
+
+        user.isDeleted = false;
+        await user.save();
+
+        res.status(200).json({ message: 'User restored successfully' });
+
+    } catch (error) {
+        console.error('Error restoring user:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 }
