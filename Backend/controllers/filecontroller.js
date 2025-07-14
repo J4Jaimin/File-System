@@ -140,7 +140,7 @@ export const uploadFile = async (req, res, next) => {
 
     let fileName = req.headers.filename || "untitled";
     let sid = req.signedCookies.sid;
-    const s = await Session.findById(sid);
+    const s = await getSession(sid);
     const uid = s.userId;
     const user = await usermodel.findById(uid);
     const ext = path.extname(fileName);

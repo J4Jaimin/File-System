@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 import Session from '../models/sessionmodel.js';
+import { createSession, getSession, deleteSession, getAllUserSessions, deleteAllUserSessions } from '../utils/sessionmanager.js';
 
 export const getUserDetails = (req, res, next) => {
     res.status(200).json({
@@ -114,19 +115,19 @@ export const loginUser = async (req, res, next) => {
             });
         }
 
-        const session = await Session.create({ userId: user._id });
+        const sessionId = await createSession(user._id.toString());
 
-        const sessions = await Session.find({ userId: user._id });
+        const sessions = await getAllUserSessions(user._id.toString());
 
         if (sessions.length > 2) {
             const oldestSession = sessions.reduce((oldest, current) => {
                 return oldest.createdAt < current.createdAt ? oldest : current;
             });
 
-            await Session.deleteOne({ _id: oldestSession._id });
+            await deleteSession(oldestSession.sessionId);
         }
 
-        res.cookie("sid", session.id, {
+        res.cookie("sid", sessionId, {
             httpOnly: true,
             signed: true,
             maxAge: 60 * 60 * 24 * 7 * 1000
@@ -152,7 +153,7 @@ export const logoutUser = async (req, res, next) => {
         });
     }
 
-    await Session.findByIdAndDelete({ _id: sessionId });
+    await deleteSession(sessionId);
 
     res.clearCookie('sid');
     res.status(200).json({
@@ -162,13 +163,13 @@ export const logoutUser = async (req, res, next) => {
 
 export const logoutAllUser = async (req, res, next) => {
     const sessionId = req.signedCookies.sid;
-    const session = await Session.findById(sessionId);
+    const session = await getSession(sessionId);
     if (!session) {
         return res.status(400).json({
             error: "No session found"
         });
     }
-    await Session.deleteMany({ userId: session.userId });
+    await deleteAllUserSessions(session.userId);
     res.clearCookie('sid');
     res.status(200).json({
         message: "User logged out from all devices successfully"

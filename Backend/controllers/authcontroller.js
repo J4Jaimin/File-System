@@ -3,6 +3,7 @@ import crypto, { pbkdf2 } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 import Session from '../models/sessionmodel.js';
+import { createSession, deleteSession, getAllUserSessions } from '../utils/sessionmanager.js';
 import nodemailer from 'nodemailer';
 import OtpModel from '../models/otpmodel.js';
 
@@ -91,19 +92,19 @@ export const googleAuth = async (req, res, next) => {
                 });
             }
             
-            const session = await Session.create({ userId: user._id });
+            const s_id = await createSession(user._id);
 
-            const sessions = await Session.find({ userId: user._id });
+            const sessions = await getAllUserSessions(user._id);
 
             if (sessions.length > 2) {
                 const oldestSession = sessions.reduce((oldest, current) => {
                     return oldest.createdAt < current.createdAt ? oldest : current;
                 });
 
-                await Session.deleteOne({ _id: oldestSession._id });
+                await deleteSession(oldestSession);
             }
 
-            res.cookie("sid", session.id, {
+            res.cookie("sid", s_id, {
                 httpOnly: true,
                 signed: true,
                 maxAge: 60 * 60 * 24 * 7 * 1000
@@ -142,9 +143,9 @@ export const googleAuth = async (req, res, next) => {
             );
 
             
-            const s = await Session.create({ userId: insertedUser[0]._id });
+            const s_id = await createSession(insertedUser[0]._id);
             
-            res.cookie("sid", s.id, {
+            res.cookie("sid", s_id, {
                 httpOnly: true,
                 signed: true,
                 maxAge: 60 * 60 * 1000

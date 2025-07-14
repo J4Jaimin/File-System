@@ -3,13 +3,12 @@ import { rm } from 'fs/promises';
 import path from "path";
 import DirModel from "../models/dirmodel.js";
 import FileModel from "../models/filemodel.js";
-import usermodel from "../models/usermodel.js";
 import Session from "../models/sessionmodel.js";
-
+import { getSession } from "../utils/sessionmanager.js";
 export const getDirectories = async (req, res, next) => {
 
     let sid = req.signedCookies.sid;
-    const s = await Session.findById(sid);
+    const s = await getSession(sid);
     const uid = s.userId;
 
     try {
@@ -58,7 +57,7 @@ export const getDirectories = async (req, res, next) => {
 export const makeDirecotry = async (req, res, next) => {
 
     let sid = req.signedCookies.sid;
-    const s = await Session.findById(sid);
+    const s = await getSession(sid);
     const uid = s.userId;
     const dirname = req.headers.dirname || "New Folder";
     const session = await mongoose.startSession();

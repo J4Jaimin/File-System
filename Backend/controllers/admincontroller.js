@@ -1,5 +1,6 @@
 import User from '../models/usermodel.js';
 import Session from '../models/sessionmodel.js';
+import { getAllUserSessions, deleteAllUserSessions } from '../utils/sessionmanager.js';
 
 export const getAllUsers = async (req, res) => {
 
@@ -13,10 +14,10 @@ export const getAllUsers = async (req, res) => {
         const users = await User.find({isDeleted: false}, '-password -__v').lean();
         const deletedUsers = await User.find({isDeleted: true}, '-password -__v').lean();
         const usersWithLoginStatus = await Promise.all(users.map(async (user) => {
-            const session = await Session.findOne({ userId: user._id });
+            const sessions = await getAllUserSessions(user._id.toString());
             return {
                 ...user,
-                isLoggedIn: !!session
+                isLoggedIn: sessions.length > 0
             };
         }));
 
@@ -133,11 +134,7 @@ export const logoutParticularUser = async (req, res) => {
     }
 
     try {
-        const session = await Session.findOneAndDelete({ userId });
-
-        if (!session) {
-            return res.status(404).json({ message: 'User not found or already logged out' });
-        }
+        await deleteAllUserSessions(userId);
 
         res.status(200).json({ message: 'User logged out successfully' });
 

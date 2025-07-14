@@ -1,6 +1,6 @@
 import Session from '../models/sessionmodel.js';
 import UserModel from '../models/usermodel.js';
-
+import { getSession } from '../utils/sessionmanager.js';
 const isAuthorized = async (req, res, next) => {
 
     const session_id = req.signedCookies.sid;
@@ -14,7 +14,7 @@ const isAuthorized = async (req, res, next) => {
 
     try {
 
-        const session = await Session.findById(session_id);
+        const session = await getSession(session_id);
 
         if (!session) {
             res.clearCookie('sid');
