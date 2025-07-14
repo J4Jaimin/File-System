@@ -8,8 +8,8 @@ export const createSession = async (userId) => {
         createdAt: new Date()
     });
     await redisClient.sAdd(`userSessions:${userId}`, sessionId);
-    await redisClient.expire(`session:${sessionId}`, 60 * 60 * 24 * 7);
-    await redisClient.expire(`userSessions:${userId}`, 60 * 60 * 24 * 7);
+    await redisClient.expire(`session:${sessionId}`, 3600);
+    await redisClient.expire(`userSessions:${userId}`, 3600);
     return sessionId;
 }
 
@@ -28,7 +28,7 @@ export const deleteSession = async (sessionId) => {
 
     if(session?.userId) {
         await redisClient.sRem(`userSessions:${session.userId}`, sessionId);
-        await redisClient.expire(`userSessions:${session.userId}`, 60 * 60 * 24 * 7);
+        await redisClient.expire(`userSessions:${session.userId}`, 3600);
     }
     await redisClient.json.del(`session:${sessionId}`);
 }
