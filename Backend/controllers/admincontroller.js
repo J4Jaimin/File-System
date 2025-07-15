@@ -16,7 +16,7 @@ export const getAllUsers = async (req, res) => {
             const sessions = await getAllUserSessions(user._id.toString());
             return {
                 ...user,
-                isLoggedIn: sessions.documents.length > 0
+                isLoggedIn: sessions.total > 0
             };
         }));
 

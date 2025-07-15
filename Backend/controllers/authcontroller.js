@@ -95,12 +95,12 @@ export const googleAuth = async (req, res, next) => {
 
             const sessions = await getAllUserSessions(user._id);
 
-            if (sessions.length > 2) {
-                const oldestSession = sessions.reduce((oldest, current) => {
-                    return oldest.createdAt < current.createdAt ? oldest : current;
+            if (sessions.total > 2) {
+                const oldestSession = sessions.documents.reduce((oldest, current) => {
+                    return oldest.value.createdAt < current.value.createdAt ? oldest : current;
                 });
 
-                await deleteSession(oldestSession);
+                await deleteSession(oldestSession.id.split(':')[1]);
             }
 
             res.cookie("sid", s_id, {
