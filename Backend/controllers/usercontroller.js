@@ -122,7 +122,7 @@ export const loginUser = async (req, res, next) => {
             const oldestSession = sessions.documents.reduce((oldest, current) => {
                 return oldest.value.createdAt < current.value.createdAt ? oldest : current;
             });
-            await deleteSession(oldestSession.id.split(':')[1].split('@')[0]);
+            await deleteSession(oldestSession.id.split(':')[1]);
         }
 
         res.cookie("sid", sessionId, {
