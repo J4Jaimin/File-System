@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 import crypto, { pbkdf2 } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
-import Session from '../models/sessionmodel.js';
 import { createSession, deleteSession, getAllUserSessions } from '../utils/sessionmanager.js';
 import nodemailer from 'nodemailer';
 import OtpModel from '../models/otpmodel.js';

@@ -3,7 +3,6 @@ import { rm } from 'fs/promises';
 import path from "path";
 import DirModel from "../models/dirmodel.js";
 import FileModel from "../models/filemodel.js";
-import Session from "../models/sessionmodel.js";
 import { getSession } from "../utils/sessionmanager.js";
 export const getDirectories = async (req, res, next) => {
 

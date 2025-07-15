@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import { createWriteStream } from "fs";
 import DirModel from '../models/dirmodel.js';
 import usermodel from '../models/usermodel.js';
-import Session from '../models/sessionmodel.js';
+import { getSession } from '../utils/sessionmanager.js';
 
 // const storage = multer.diskStorage({
 //     destination: (req, file, cb) => {
@@ -32,7 +32,7 @@ export const getFile = async (req, res, next) => {
         const filePath = path.join(path.resolve(import.meta.dirname, '..'), "storage", fileName);
 
         const sid = req.signedCookies.sid;
-        const s = await Session.findById(sid);
+        const s = await getSession(sid);
         const uid = s.userId;
 
         if (uid.toString() !== directory.userId.toString()) {
@@ -62,9 +62,7 @@ export const getFile = async (req, res, next) => {
 export const renameFile = async (req, res, next) => {
 
     const id = req.params.id;
-    console.log(id);
     const newFileName = req.body.newFilename;
-    const db = req.db;
 
     try {
 
@@ -100,7 +98,7 @@ export const deleteFile = async (req, res, next) => {
         const file = await FileModel.findById(id);
         const directory = await DirModel.findById(file.dirId);
         const sid = req.signedCookies.sid;
-        const s = await Session.findById(sid);
+        const s = await getSession(sid);
         const uid = s.userId;
 
         if (uid.toString() !== directory.userId.toString()) {

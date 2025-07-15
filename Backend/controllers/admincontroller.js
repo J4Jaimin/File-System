@@ -1,5 +1,4 @@
 import User from '../models/usermodel.js';
-import Session from '../models/sessionmodel.js';
 import { getAllUserSessions, deleteAllUserSessions } from '../utils/sessionmanager.js';
 
 export const getAllUsers = async (req, res) => {
@@ -17,7 +16,7 @@ export const getAllUsers = async (req, res) => {
             const sessions = await getAllUserSessions(user._id.toString());
             return {
                 ...user,
-                isLoggedIn: sessions.length > 0
+                isLoggedIn: sessions.documents.length > 0
             };
         }));
 
@@ -53,7 +52,7 @@ export const deleteParticularUser = async (req, res, next) => {
             next();
         }
 
-        await Session.deleteMany({ userId });
+        await deleteAllUserSessions(userId);
 
         res.status(200).json({
              message: 'User deleted successfully' 

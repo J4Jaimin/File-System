@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
-import Session from '../models/sessionmodel.js';
 import { createSession, getSession, deleteSession, getAllUserSessions, deleteAllUserSessions } from '../utils/sessionmanager.js';
 
 export const getUserDetails = (req, res, next) => {
@@ -123,8 +122,7 @@ export const loginUser = async (req, res, next) => {
             const oldestSession = sessions.reduce((oldest, current) => {
                 return oldest.createdAt < current.createdAt ? oldest : current;
             });
-
-            await deleteSession(oldestSession.sessionId);
+            await deleteSession(oldestSession.id.split(':')[1]);
         }
 
         res.cookie("sid", sessionId, {
