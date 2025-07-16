@@ -1,4 +1,3 @@
-import Session from '../models/sessionmodel.js';
 import UserModel from '../models/usermodel.js';
 import { getSession } from '../utils/sessionmanager.js';
 const isAuthorized = async (req, res, next) => {
