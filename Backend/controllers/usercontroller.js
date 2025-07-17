@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
+import OtpModel from '../models/otpmodel.js';
 import { createSession, getSession, deleteSession, getAllUserSessions, deleteAllUserSessions } from '../utils/sessionmanager.js';
 
 export const getUserDetails = (req, res, next) => {
@@ -32,6 +33,16 @@ export const registerUser = async (req, res, next) => {
 
     try {
         session.startTransaction();
+
+        const otp = await OtpModel.findOne({ email });
+
+        if(!otp || !otp.isVerified) {
+            return res.status(400).json({
+                error: "Email not verified, Please verify your email first."
+            });
+        }
+
+        await OtpModel.deleteOne({ email });
 
         const dir = {
             name: `root-${email}`,

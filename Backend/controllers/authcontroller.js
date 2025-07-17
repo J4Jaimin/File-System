@@ -22,7 +22,10 @@ export const sendOtpToEmail = async (req, res, next) => {
 
         const OTP = crypto.randomInt(1000, 9999).toString();
 
-        await OtpModel.create({ otp: OTP });
+        await OtpModel.create({
+            email: email,
+            otp: OTP,
+        });
 
         const info = await transporter.sendMail({
             from: '"Own Cloud" <owncloud@support.com>',
@@ -56,11 +59,11 @@ export const verifyOtp = async (req, res, next) => {
             });
         }
         else {
+            await OtpModel.updateOne({ otp }, { $set: { isVerified: true } });
             res.status(200).json({
                 message: "OTP verified successfully",
                 verified: true
             });
-            await OtpModel.deleteOne({ otp });
         }
     } catch (error) {
         console.log(error);
