@@ -15,8 +15,8 @@ export const sendOtpToEmail = async (req, res, next) => {
             host: "smtp.gmail.com",
             port: 587,
             auth: {
-                user: "jaiminrana1102@gmail.com",
-                pass: "quci lsws dmpb pbwp",
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS,
             },
         });
 

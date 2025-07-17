@@ -16,6 +16,7 @@
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mime-types": "^2.1.35",

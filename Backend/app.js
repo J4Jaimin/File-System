@@ -2,6 +2,7 @@ import express from "express";
 import cors from 'cors';
 import fileRoutes from './routes/fileroutes.js';
 import cookieParser from "cookie-parser";
+import dotenv from 'dotenv';
 import dirRoutes from './routes/dirroutes.js';
 import userRoutes from './routes/userroutes.js';
 import authRoutes from './routes/authroutes.js';
@@ -9,16 +10,18 @@ import adminRoutes from './routes/adminroutes.js';
 import isAuthorized from './middlewares/auth.js';
 import { connectDB } from "./config/Dbconnection.js";
 
-const mySecret = "my-super-secret-key@#$";
 
 try {
-
+  
+  dotenv.config();
   // DB connection
   connectDB();
+
+  const mySecret = process.env.SESSION_SECRET;
   const app = express();
 
   const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:5174', 'https://mydrive-umber.vercel.app', 'http://localhost', 'http://10.10.211.132:5173'],
+    origin: process.env.CLIENT_URI_LOCAL,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     credentials: true,
     exposedHeaders: ['Content-Disposition']
@@ -56,7 +59,7 @@ try {
   // });
 
 
-  app.listen(4000, () => {
+  app.listen(process.env.PORT || 4000, () => {
     console.log(`Server Started`);
 
   });
