@@ -1,6 +1,6 @@
 import User from '../models/usermodel.js';
 import { getAllUserSessions, deleteAllUserSessions } from '../utils/sessionmanager.js';
-
+import { deleteUserSchema, userIdValidatorSchema } from '../validators/adminvalidator.js';
 export const getAllUsers = async (req, res) => {
 
     if(req.user.role === 'user') {
@@ -37,7 +37,7 @@ export const getAllUsers = async (req, res) => {
 
 export const deleteParticularUser = async (req, res, next) => {
 
-    const { userId, type } = req.body;
+    const { userId, type } = deleteUserSchema.parse(req.body);
 
     try {
         if(type == 'soft') {
@@ -66,7 +66,7 @@ export const deleteParticularUser = async (req, res, next) => {
 
 export const changeRole = async (req, res) => {
 
-    const userId = req.params.userId;
+    const userId = userIdValidatorSchema.parse(req.params.userId);
     const { role } = req.body;
 
     try {
@@ -91,7 +91,7 @@ export const changeRole = async (req, res) => {
 
 export const restoreUser = async (req, res) => {
 
-    const userId = req.body.userId; 
+    const userId = userIdValidatorSchema.parse(req.body.userId); 
 
     try {
         const user = await User.findById(userId);   
@@ -117,7 +117,7 @@ export const restoreUser = async (req, res) => {
 
 export const logoutParticularUser = async (req, res) => {
 
-    const { userId } = req.body;
+    const userId = userIdValidatorSchema.parse(req.body.userId);
     const user = await User.findById(userId);
 
     if(!user) {

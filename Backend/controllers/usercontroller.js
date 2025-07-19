@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
+import { ZodError } from 'zod';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 import OtpModel from '../models/otpmodel.js';
+import { loginSchema, registerSchema } from '../validators/authvalidator.js';
 import { createSession, getSession, deleteSession, getAllUserSessions, deleteAllUserSessions } from '../utils/sessionmanager.js';
 
 export const getUserDetails = (req, res, next) => {
@@ -12,26 +14,19 @@ export const getUserDetails = (req, res, next) => {
     });
 }
 export const registerUser = async (req, res, next) => {
-
-    const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-        return res.status(400).json({
-            error: "Name, Email and Password are required"
-        });
-    }
-
-    const user = await UserModel.findOne({ email });
-
-    if (user) {
-        return res.status(400).json({
-            error: "User with this email already exists."
-        });
-    }
-
-    const session = await mongoose.startSession();
-
+    
     try {
+        const { name, email, password } = registerSchema.parse(req.body);
+    
+        const userExists = await UserModel.findOne({ email });
+    
+        if (userExists) {
+            return res.status(400).json({
+                error: "User with this email already exists."
+            });
+        }
+    
+        const session = await mongoose.startSession();
         session.startTransaction();
 
         const otp = await OtpModel.findOne({ email });
@@ -77,7 +72,6 @@ export const registerUser = async (req, res, next) => {
 
     } catch (error) {
         await session.abortTransaction();
-        console.log(error);
         if (error.code === 121) {
             return res.status(400).json({
                 error: "Invalid Field, Please enter valid input."
@@ -91,8 +85,14 @@ export const registerUser = async (req, res, next) => {
                 });
             }
         }
+        else if (error instanceof ZodError) {
+            return res.status(400).json({
+              message: "Validation failed, please enter valid input.",
+              errors: error.errors,
+            });
+        }
         else {
-            next(error);
+            next();
         }
     } finally {
         session.endSession();
@@ -102,7 +102,7 @@ export const registerUser = async (req, res, next) => {
 export const loginUser = async (req, res, next) => {
 
     try {
-        const { email, password } = req.body;
+        const { email, password } = loginSchema.parse(req.body);
         const user = await UserModel.findOne({ email });
 
         if (!user) {

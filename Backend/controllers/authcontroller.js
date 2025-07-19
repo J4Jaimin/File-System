@@ -5,12 +5,13 @@ import DirModel from '../models/dirmodel.js';
 import { createSession, deleteSession, getAllUserSessions } from '../utils/sessionmanager.js';
 import nodemailer from 'nodemailer';
 import OtpModel from '../models/otpmodel.js';
+import { googleAuthSchema, sendOtpSchema, verifyOtpSchema } from '../validators/authvalidator.js';
 
 export const sendOtpToEmail = async (req, res, next) => {
 
-    const email = req.body.email;
-
     try {
+        const email = sendOtpSchema.parse(req.body.email);
+
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -49,7 +50,7 @@ export const sendOtpToEmail = async (req, res, next) => {
 
 export const verifyOtp = async (req, res, next) => {
 
-    const { otp } = req.body;
+    const otp = verifyOtpSchema.parse(Number(req.body.otp));
 
     try {
         const otpData = await OtpModel.findOne({ otp });
@@ -73,14 +74,8 @@ export const verifyOtp = async (req, res, next) => {
 
 export const googleAuth = async (req, res, next) => {
     
-    const { email, name, picture } = req.body;
+    const { email, name, picture } = googleAuthSchema.parse(req.body);
 
-    if(!email || !name || !picture) {
-        return res.status(400).json({
-            message: "Email, Name and Picture are required"
-        });
-    }
-    
     const session = await mongoose.startSession();
     
     try {
