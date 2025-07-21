@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, Link } from "react-router-dom";
 import ContinueWithGoogle from "./components/ContinueWithGoogle";
 import "./Auth.css";
@@ -11,18 +13,10 @@ const Login = () => {
     password: "xyza",
   });
 
-  // serverError will hold the error message from the server
-  const [serverError, setServerError] = useState("");
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Clear the server error as soon as the user starts typing in either field
-    if (serverError) {
-      setServerError("");
-    }
 
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -32,7 +26,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await fetch(`${BASE_URL}/user/login`, {
         method: "POST",
@@ -42,23 +36,19 @@ const Login = () => {
         },
         credentials: "include",
       });
-
+  
       const data = await response.json();
+  
       if (data.error) {
-        // If there's an error, set the serverError message
-        setServerError(data.error);
+        toast.error(data.error || "Login failed ❌");
       } else {
-        // On success, navigate to home or any other protected route
         navigate("/");
       }
     } catch (error) {
       console.error("Error:", error);
-      setServerError("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
-
-  // If there's an error, we'll add "input-error" class to both fields
-  const hasError = Boolean(serverError);
 
   return (
     <div className="container">
@@ -70,7 +60,7 @@ const Login = () => {
             Email
           </label>
           <input
-            className={`input ${hasError ? "input-error" : ""}`}
+            className="input"
             type="email"
             id="email"
             name="email"
@@ -87,7 +77,7 @@ const Login = () => {
             Password
           </label>
           <input
-            className={`input ${hasError ? "input-error" : ""}`}
+            className="input"
             type="password"
             id="password"
             name="password"
@@ -96,8 +86,6 @@ const Login = () => {
             placeholder="Enter your password"
             required
           />
-          {/* Absolutely-positioned error message below password field */}
-          {serverError && <span className="error-msg">{serverError}</span>}
         </div>
 
         <button type="submit" className="submit-button">
@@ -118,6 +106,9 @@ const Login = () => {
       <p className="link-text">
         Don't have an account? <Link to="/register">Register</Link>
       </p>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+
     </div>
   );
 };

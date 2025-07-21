@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { ZodError } from 'zod';
 import crypto, { pbkdf2 } from 'crypto';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
@@ -10,8 +11,15 @@ import { googleAuthSchema, sendOtpSchema, verifyOtpSchema } from '../validators/
 export const sendOtpToEmail = async (req, res, next) => {
 
     try {
-        const email = sendOtpSchema.parse(req.body.email);
+        const user = await UserModel.findOne({ email: sendOtpSchema.parse(req.body.email) });    
 
+        if(user) {
+            return res.status(400).json({
+                error: "User with this email already exists. Please login."
+            });
+        }
+
+        const email = sendOtpSchema.parse(req.body.email);
         const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -43,8 +51,15 @@ export const sendOtpToEmail = async (req, res, next) => {
         });
 
     } catch (error) {
-        console.log(error);
-        next();
+        if (error instanceof ZodError) {
+            return res.status(400).json({
+              error: "Please enter a valid email address."
+            });
+        }
+        else {
+            console.log(error);
+            next();
+        }
     }
 }
 

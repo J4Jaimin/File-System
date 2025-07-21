@@ -39,11 +39,6 @@
   border-radius: 4px;
 }
 
-/* Red border when there's an error */
-.input-error {
-  border: 1px solid red;
-}
-
 /* Absolutely positioned error message */
 .error-msg {
   position: absolute;

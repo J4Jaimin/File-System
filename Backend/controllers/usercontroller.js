@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { ZodError } from 'zod';
 import UserModel from '../models/usermodel.js';
 import DirModel from '../models/dirmodel.js';
 import OtpModel from '../models/otpmodel.js';
@@ -15,6 +14,8 @@ export const getUserDetails = (req, res, next) => {
 }
 export const registerUser = async (req, res, next) => {
     
+    const session = await mongoose.startSession();
+    
     try {
         const { name, email, password } = registerSchema.parse(req.body);
     
@@ -26,7 +27,6 @@ export const registerUser = async (req, res, next) => {
             });
         }
     
-        const session = await mongoose.startSession();
         session.startTransaction();
 
         const otp = await OtpModel.findOne({ email });
@@ -84,12 +84,6 @@ export const registerUser = async (req, res, next) => {
                     message: "A user with this email is already exist, please try different email.",
                 });
             }
-        }
-        else if (error instanceof ZodError) {
-            return res.status(400).json({
-              message: "Validation failed, please enter valid input.",
-              errors: error.errors,
-            });
         }
         else {
             next();

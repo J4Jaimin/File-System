@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, Link } from "react-router-dom";
 import ContinueWithGoogle from "./components/ContinueWithGoogle";
 import "./Auth.css";
@@ -13,7 +15,6 @@ const Register = () => {
   });
 
   // serverError will hold the error message from the server
-  const [serverError, setServerError] = useState("");
 
   const [isSuccess, setIsSuccess] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -55,11 +56,6 @@ const Register = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // Clear the server error as soon as the user starts typing in Email
-    if (name === "email" && serverError) {
-      setServerError("");
-    }
-
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -67,10 +63,42 @@ const Register = () => {
   };
 
   // Handler for form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsSuccess(false); // reset success if any
+
+  //   try {
+  //     const response = await fetch(`${BASE_URL}/user/register`, {
+  //       method: "POST",
+  //       body: JSON.stringify(formData),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
+
+  //     const data = await response.json();
+
+  //     if (data.error) {
+  //       // Show error below the email field (e.g., "Email already exists")
+  //       setServerError(data.error);
+  //     } else {
+  //       // Registration success
+  //       setIsSuccess(true);
+  //       setTimeout(() => {
+  //         navigate("/login");
+  //       }, 1000);
+  //     }
+  //   } catch (error) {
+  //     // In case fetch fails
+  //     console.error("Error:", error);
+  //     setServerError("Something went wrong. Please try again.");
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSuccess(false); // reset success if any
-
+    setIsSuccess(false); // reset success
+  
     try {
       const response = await fetch(`${BASE_URL}/user/register`, {
         method: "POST",
@@ -79,25 +107,27 @@ const Register = () => {
           "Content-Type": "application/json",
         },
       });
-
+  
       const data = await response.json();
-
+  
       if (data.error) {
-        // Show error below the email field (e.g., "Email already exists")
-        setServerError(data.error);
+        // Show toast error instead of setting serverError state
+        toast.error(data.error); // example: "Email already exists"
       } else {
-        // Registration success
+        // Show success toast
+        toast.success("Registered successfully!");
+  
         setIsSuccess(true);
         setTimeout(() => {
           navigate("/login");
         }, 1000);
       }
     } catch (error) {
-      // In case fetch fails
       console.error("Error:", error);
-      setServerError("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     }
   };
+  
 
   const handleEmailVerify = async () => {
     setIsVerifying(true);
@@ -107,38 +137,44 @@ const Register = () => {
         body: JSON.stringify({ email: formData.email }),
         headers: { "Content-Type": "application/json" },
       });
-
+  
       const data = await response.json();
+  
       if (data.success) {
         setShowOtpInput(true);
+        toast.success("OTP sent successfully 📧");
+      } else {
+        toast.error(data.error || "Failed to send OTP");
       }
-
     } catch (error) {
       console.error("Error sending OTP:", error);
+      toast.error("Something went wrong while sending OTP ❌");
     } finally {
       setIsVerifying(false);
     }
   };
+  
 
   const handleVerifyOtp = async () => {
     try {
-
       const response = await fetch(`${BASE_URL}/auth/verify-otp`, {
         method: "POST",
         body: JSON.stringify({ otp }),
         headers: { "Content-Type": "application/json" },
       });
-
+  
       const data = await response.json();
-
+  
       if (data.verified) {
         setIsEmailVerified(true);
         setShowOtpInput(false);
+        toast.success("OTP verified successfully ✅");
       } else {
-        alert("OTP incorrect");
+        toast.error("OTP is incorrect ❌");
       }
     } catch (error) {
       console.error("OTP verify error:", error);
+      toast.error("Something went wrong while verifying OTP");
     }
   };
 
@@ -171,7 +207,7 @@ const Register = () => {
 
           <div className="input-wrapper">
             <input
-              className={`input ${serverError ? "input-error" : ""}`}
+              className="input"
               type="email"
               id="email"
               name="email"
@@ -215,8 +251,6 @@ const Register = () => {
             )}
 
           </div>
-
-          {serverError && <span className="error-msg">{serverError}</span>}
         </div>
 
 
@@ -259,7 +293,11 @@ const Register = () => {
       <p className="link-text">
         Already have an account? <Link to="/login">Login</Link>
       </p>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+
     </div>
+    
   );
 };
 
