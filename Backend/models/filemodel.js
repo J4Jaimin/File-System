@@ -13,6 +13,11 @@ const fileModel = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'directories',
         required: true
+    }, 
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'users',
+        required: true
     }
 });
 

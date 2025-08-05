@@ -21,29 +21,33 @@ export const getDirectories = async (req, res, next) => {
             });
         }
 
-        const files = await Promise.all(
-            folderData.files.map(async (fileId) => {
-                const file = await FileModel.findOne({ _id: fileId });
+        const files = await FileModel.find({dirId: id}).lean();
 
-                if (!file) return null;
+        const directories = await DirModel.find({parent: id}).lean();
 
-                const newFile = { ...file._doc, id: file._id };
-                delete newFile._id;
+        // const files = await Promise.all(
+        //     folderData.files.map(async (fileId) => {
+        //         const file = await FileModel.findOne({ _id: fileId });
 
-                return newFile;
-            }));
+        //         if (!file) return null;
 
-        const directories = await Promise.all(
-            folderData.directories.map(async (dirId) => {
-                const folder = await DirModel.findOne({ _id: dirId });
+        //         const newFile = { ...file._doc, id: file._id };
+        //         delete newFile._id;
 
-                if (!folder) return null;
+        //         return newFile;
+        //     }));
 
-                return {
-                    id: folder._id,
-                    name: folder.name,
-                }
-            }));
+        // const directories = await Promise.all(
+        //     folderData.directories.map(async (dirId) => {
+        //         const folder = await DirModel.findOne({ _id: dirId });
+
+        //         if (!folder) return null;
+
+        //         return {
+        //             id: folder._id,
+        //             name: folder.name,
+        //         }
+        //     }));
 
         res.status(200).json({ ...folderData, files, directories });
 

@@ -26,7 +26,6 @@ export const getFile = async (req, res, next) => {
 
     try {
         const file = await FileModel.findById(id);
-        const directory = await DirModel.findById(file.dirId);
 
         const fileName = path.join('/', file._id + file.ext);
         const filePath = path.join(path.resolve(import.meta.dirname, '..'), "storage", fileName);
@@ -35,7 +34,7 @@ export const getFile = async (req, res, next) => {
         const s = await getSession(sid);
         const uid = s.userId;
 
-        if (uid.toString() !== directory.userId.toString()) {
+        if (uid.toString() !== file.userId.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to access this file."
             });
@@ -67,9 +66,8 @@ export const renameFile = async (req, res, next) => {
     try {
 
         const fileToBeRename = await FileModel.findById(id);
-        const directory = await DirModel.findById(fileToBeRename.dirId);
 
-        if (JSON.parse(req.signedCookies.token).uid !== directory.userId.toString()) {
+        if (JSON.parse(req.signedCookies.token).uid !== fileToBeRename.userId.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to rename this file."
             });
@@ -96,12 +94,12 @@ export const deleteFile = async (req, res, next) => {
 
     try {
         const file = await FileModel.findById(id);
-        const directory = await DirModel.findById(file.dirId);
+        // const directory = await DirModel.findById(file.dirId);
         const sid = req.signedCookies.sid;
         const s = await getSession(sid);
         const uid = s.userId;
 
-        if (uid.toString() !== directory.userId.toString()) {
+        if (uid.toString() !== file.userId.toString()) {
             return res.status(403).json({
                 message: "You are not authorized to delete this file."
             });
@@ -117,10 +115,10 @@ export const deleteFile = async (req, res, next) => {
 
         await FileModel.deleteOne({ _id: id });
 
-        await DirModel.findOneAndUpdate(
-            { _id: file.dirId },
-            { $pull: { files: id } }
-        );
+        // await DirModel.findOneAndUpdate(
+        //     { _id: file.dirId },
+        //     { $pull: { files: id } }
+        // );
 
         await fs.unlink(path.join(path.resolve(import.meta.dirname, '..'), "storage", filePath));
 
@@ -134,7 +132,7 @@ export const deleteFile = async (req, res, next) => {
     }
 };
 
-export const uploadFile = async (req, res, next) => {
+export const uploadFile = async (req, res) => {
 
     let fileName = req.headers.filename || "untitled";
     let sid = req.signedCookies.sid;
@@ -154,13 +152,14 @@ export const uploadFile = async (req, res, next) => {
             ext,
             name: fileName,
             dirId,
+            userId: user._id
         }], { session });
 
-        await DirModel.updateOne(
-            { _id: dirId },
-            { $push: { files: insertedFile[0]._id } },
-            { session }
-        );
+        // await DirModel.updateOne(
+        //     { _id: dirId },
+        //     { $push: { files: insertedFile[0]._id } },
+        //     { session }
+        // );
 
         const fullName = path.join('/', insertedFile[0]._id + ext);
         const writeStream = await createWriteStream(`./storage/${fullName}`);

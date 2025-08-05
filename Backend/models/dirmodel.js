@@ -10,16 +10,16 @@ const dirModel = new mongoose.Schema({
         ref: 'directories',
         default: null
     },
-    files: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'files',
-        default: []
-    },
-    directories: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'directories',
-        default: []
-    },
+    // files: {
+    //     type: [mongoose.Schema.Types.ObjectId],
+    //     ref: 'files',
+    //     default: []
+    // },
+    // directories: {
+    //     type: [mongoose.Schema.Types.ObjectId],
+    //     ref: 'directories',
+    //     default: []
+    // },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'users'

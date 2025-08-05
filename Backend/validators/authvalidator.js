@@ -12,7 +12,7 @@ export const registerSchema = z.object({
     password: z.string().min(4).max(100)
 });
 
-export const verifyOtpSchema = z.number().min(1000).max(9999);
+export const verifyOtpSchema = z.number("Please enter 4 digit valid OTP.").min(1000).max(9999);
 
 export const sendOtpSchema = z.string().email("Please enter valid email");
 
