@@ -3,7 +3,7 @@ import express from 'express';
 import path from "path";
 import { ObjectId } from 'mongodb';
 import { validateObjectId } from "../middlewares/validation.js";
-import { deleteDirectory, getDirectories, makeDirecotry, renameDirectory } from "../controllers/dircontroller.js";
+import { deleteDirectory, getDirectories, makeDirectory, renameDirectory } from "../controllers/dircontroller.js";
 import isAuthorized from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -16,7 +16,7 @@ router.param("parentId", validateObjectId);
 router.get("/:id?", getDirectories);
 
 // make new directory 
-router.post("/:parentId?", makeDirecotry);
+router.post("/:parentId?", makeDirectory);
 
 // delete directory
 router.delete("/:id", deleteDirectory);

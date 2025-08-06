@@ -57,7 +57,7 @@ export const getDirectories = async (req, res, next) => {
     }
 };
 
-export const makeDirecotry = async (req, res, next) => {
+export const makeDirectory = async (req, res, next) => {
 
     let sid = req.signedCookies.sid;
     const s = await getSession(sid);
@@ -78,19 +78,17 @@ export const makeDirecotry = async (req, res, next) => {
 
         session.startTransaction();
 
-        const insertedDir = await DirModel.create([{
+        await DirModel.create([{
             name: dirname,
             parent: parent,
             userId: uid,
-            files: [],
-            directories: []
         }], { session });
 
-        await DirModel.updateOne(
-            { _id: parentDir._id },
-            { $push: { directories: insertedDir[0]._id } },
-            { session }
-        );
+        // await DirModel.updateOne(
+        //     { _id: parentDir._id },
+        //     { $push: { directories: insertedDir[0]._id } },
+        //     { session }
+        // );
 
         await session.commitTransaction();
 
@@ -152,19 +150,23 @@ export const deleteDirectory = async (req, res, next) => {
             })
         }
 
-        await deleteFilesInDirectory(dirData.files);
+        // await deleteFilesInDirectory(dirData.files);
 
-        await DirModel.findOneAndUpdate(
-            { _id: id },
-            { $set: { files: [] } }
-        );
+        await FileModel.deleteMany({dirId: id});
 
-        await deleteNestedDirectories(dirData.directories);
+        // await DirModel.findOneAndUpdate(
+        //     { _id: id },
+        //     { $set: { files: [] } }
+        // );
 
-        await DirModel.findOneAndUpdate(
-            { _id: dirData.parent },
-            { $pull: { directories: dirData._id } }
-        );
+        // await deleteNestedDirectories(dirData.directories);
+
+        await DirModel.deleteMany({parent: id});
+
+        // await DirModel.findOneAndUpdate(
+        //     { _id: dirData.parent },
+        //     { $pull: { directories: dirData._id } }
+        // );
 
         await DirModel.deleteOne({ _id: id });
 
