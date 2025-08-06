@@ -4,6 +4,8 @@ import path from "path";
 import DirModel from "../models/dirmodel.js";
 import FileModel from "../models/filemodel.js";
 import { getSession } from "../utils/sessionmanager.js";
+
+
 export const getDirectories = async (req, res, next) => {
 
     let sid = req.signedCookies.sid;
@@ -21,33 +23,12 @@ export const getDirectories = async (req, res, next) => {
             });
         }
 
-        const files = await FileModel.find({dirId: id}).lean();
+        const filesRaw = await FileModel.find({dirId: id});
 
-        const directories = await DirModel.find({parent: id}).lean();
+        const directoriesRaw = await DirModel.find({parent: id});
 
-        // const files = await Promise.all(
-        //     folderData.files.map(async (fileId) => {
-        //         const file = await FileModel.findOne({ _id: fileId });
-
-        //         if (!file) return null;
-
-        //         const newFile = { ...file._doc, id: file._id };
-        //         delete newFile._id;
-
-        //         return newFile;
-        //     }));
-
-        // const directories = await Promise.all(
-        //     folderData.directories.map(async (dirId) => {
-        //         const folder = await DirModel.findOne({ _id: dirId });
-
-        //         if (!folder) return null;
-
-        //         return {
-        //             id: folder._id,
-        //             name: folder.name,
-        //         }
-        //     }));
+        const files = filesRaw.map((file) => ({ ...file._doc, id: file._id.toString() }));
+        const directories = directoriesRaw.map((dir) => ({ id: dir._id.toString(), name: dir.name }));
 
         res.status(200).json({ ...folderData, files, directories });
 
@@ -84,12 +65,6 @@ export const makeDirectory = async (req, res, next) => {
             userId: uid,
         }], { session });
 
-        // await DirModel.updateOne(
-        //     { _id: parentDir._id },
-        //     { $push: { directories: insertedDir[0]._id } },
-        //     { session }
-        // );
-
         await session.commitTransaction();
 
         session.endSession();
@@ -107,37 +82,6 @@ export const makeDirectory = async (req, res, next) => {
     }
 };
 
-async function deleteFilesInDirectory(fileIds) {
-    for (const fileId of fileIds) {
-        const fileData = await FileModel.findOne({ _id: fileId });
-        if (fileData) {
-            await rm(path.join(path.resolve(import.meta.dirname, '..'), "storage", `${String(fileId)}${fileData.ext}`));
-        }
-
-    }
-    await FileModel.deleteMany({ _id: { $in: fileIds } });
-}
-
-async function deleteNestedDirectories(directoryIds) {
-
-    for (const dirId of directoryIds) {
-
-        const dir = await DirModel.findOne({ _id: dirId });
-
-        if (dir) {
-            await deleteFilesInDirectory(dir.files);
-            await deleteNestedDirectories(dir.directories);
-            await DirModel.findOneAndUpdate(
-                { _id: dir.parent },
-                {
-                    $pull: { directories: dirId }
-                });
-        }
-    }
-
-    await DirModel.deleteMany({ _id: { $in: directoryIds } });
-}
-
 export const deleteDirectory = async (req, res, next) => {
 
     try {
@@ -150,23 +94,9 @@ export const deleteDirectory = async (req, res, next) => {
             })
         }
 
-        // await deleteFilesInDirectory(dirData.files);
-
         await FileModel.deleteMany({dirId: id});
 
-        // await DirModel.findOneAndUpdate(
-        //     { _id: id },
-        //     { $set: { files: [] } }
-        // );
-
-        // await deleteNestedDirectories(dirData.directories);
-
         await DirModel.deleteMany({parent: id});
-
-        // await DirModel.findOneAndUpdate(
-        //     { _id: dirData.parent },
-        //     { $pull: { directories: dirData._id } }
-        // );
 
         await DirModel.deleteOne({ _id: id });
 
