@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import DirectoryView from "./DirectoryView";
 import Register from "./Register";
+import ResetPassword from "./ResetPassword";
+import ForgotPassword from './ForgotPassword';
 import "./App.css";
 import Login from "./Login";
 import UsersPage from "./UsersPage";
@@ -23,6 +25,14 @@ const router = createBrowserRouter([
   {
     path: "/directory/:dirId",
     element: <DirectoryView />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
+  },
+  {
+    path: "/forgot-password/:token",
+    element: <ForgotPassword />
   },
   {
     path: "/users",

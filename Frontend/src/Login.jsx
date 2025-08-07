@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, Link } from "react-router-dom";
 import ContinueWithGoogle from "./components/ContinueWithGoogle";
 import "./Auth.css";
 
 const Login = () => {
-  const BASE_URL = "http://localhost:4000" // "https://jai-drive.onrender.com";
+  const BASE_URL = "http://localhost:4000"; // "https://jai-drive.onrender.com";
 
   const [formData, setFormData] = useState({
     email: "jaimin@gmail.com",
@@ -26,7 +26,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const response = await fetch(`${BASE_URL}/user/login`, {
         method: "POST",
@@ -36,9 +36,9 @@ const Login = () => {
         },
         credentials: "include",
       });
-  
+
       const data = await response.json();
-  
+
       if (data.error) {
         toast.error(data.error || "Login failed ❌");
       } else {
@@ -88,19 +88,25 @@ const Login = () => {
           />
         </div>
 
+        <div className="reset-password-wrapper">
+          <Link to="/reset-password" className="reset-password-link">
+            Forgot Password?
+          </Link>
+        </div>
+
         <button type="submit" className="submit-button">
           Login
         </button>
       </form>
 
       {/* Separator */}
-    <div className="separator">
-      <div className="line" />
-      <span className="or-text">or</span>
-      <div className="line" />
-    </div>
+      <div className="separator">
+        <div className="line" />
+        <span className="or-text">or</span>
+        <div className="line" />
+      </div>
 
-    <ContinueWithGoogle />
+      <ContinueWithGoogle />
 
       {/* Link to the register page */}
       <p className="link-text">
@@ -108,7 +114,6 @@ const Login = () => {
       </p>
 
       <ToastContainer position="top-right" autoClose={3000} />
-
     </div>
   );
 };

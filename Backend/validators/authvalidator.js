@@ -14,7 +14,7 @@ export const registerSchema = z.object({
 
 export const verifyOtpSchema = z.number("Please enter 4 digit valid OTP.").min(1000).max(9999);
 
-export const sendOtpSchema = z.string().email("Please enter valid email");
+export const emailValidator = z.string().email("Please enter valid email");
 
 export const googleAuthSchema = z.object({
     email: z.string().email("Please enter valid email"),
