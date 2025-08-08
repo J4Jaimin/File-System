@@ -6,7 +6,7 @@ import DirModel from '../models/dirmodel.js';
 import { createSession, deleteSession, getAllUserSessions } from '../utils/sessionmanager.js';
 import nodemailer from 'nodemailer';
 import OtpModel from '../models/otpmodel.js';
-import { googleAuthSchema, emailValidator, verifyOtpSchema } from '../validators/authvalidator.js';
+import { googleAuthSchema, emailValidator, verifyOtpSchema, resetPasswordSchema } from '../validators/authvalidator.js';
 
 export const sendOtpToEmail = async (req, res, next) => {
 
@@ -253,6 +253,43 @@ export const resetPassword = async (req, res, next) => {
         if (error instanceof ZodError) {
             return res.status(400).json({
               message: "Please enter a valid email address."
+            });
+        }
+        else {
+            console.log(error);
+            next();
+        }
+    }
+}
+
+export const forgotPassword = async(req, res, next) => {
+
+    try {
+        const user = await UserModel.findOne({resetToken: req.body.token});
+    
+        if(!user) {
+            return res.status(400).json({
+                message: "Invalid Token"
+            });
+        }
+    
+        if(user.resetTokenExpiry > Date.now()) {
+            return res.status(403).json({
+                message: "Token expired, please try again."
+            });
+        }
+    
+        user.password = resetPasswordSchema.parse(req.body.newPassword);
+        await user.save();
+    
+        return res.status(200).json({
+            message: "Password reset successfully"
+        });
+        
+    } catch (error) {
+        if (error instanceof ZodError) {
+            return res.status(400).json({
+              message: "Please enter a valid email password."
             });
         }
         else {

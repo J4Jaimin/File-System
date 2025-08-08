@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
+import { toast } from "react-toastify";
 import { useParams, useNavigate } from 'react-router-dom';
 import './Auth.css';
 
-const ResetPassword = () => {
+const ForgotPassword = () => {
   const { token } = useParams();
   const navigate = useNavigate();
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match ❌');
+      toast.error("password do not match.");
       return;
     }
 
     try {
-      const res = await fetch('http://localhost:4000/user/reset-password', {
+      const res = await fetch('http://localhost:4000/auth/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,12 +33,14 @@ const ResetPassword = () => {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || 'Something went wrong ❌');
+      if(res.ok) {
+        toast.success(data.message || 'Password reset successfully');
+        setTimeout(() => navigate('/login'), 500);
       }
-
-      setSuccess('Password reset successfully ✅');
-      setTimeout(() => navigate('/login'), 2000);
+      else {
+        toast.error(data.message || "Something went wrong");
+        navigate('/reset-password');
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -87,4 +89,4 @@ const ResetPassword = () => {
   );
 };
 
-export default ResetPassword;
+export default ForgotPassword;
