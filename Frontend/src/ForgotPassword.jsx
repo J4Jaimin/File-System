@@ -79,9 +79,6 @@ const ForgotPassword = () => {
             />
           </div>
 
-          {error && <p className="error-msg">{error}</p>}
-          {success && <p style={{ color: 'green', marginTop: '10px' }}>{success}</p>}
-
           <button className="submit-button" type="submit">Reset Password</button>
         </form>
       </div>

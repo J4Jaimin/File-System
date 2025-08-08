@@ -269,7 +269,7 @@ export const forgotPassword = async(req, res, next) => {
     
         if(!user) {
             return res.status(400).json({
-                message: "Invalid Token"
+                message: "Invalid Token, please try again"
             });
         }
     
