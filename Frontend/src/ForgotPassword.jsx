@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import { useParams, useNavigate } from 'react-router-dom';
+import {FaEye, FaEyeSlash} from "react-icons/fa";
 import './Auth.css';
 
 const ForgotPassword = () => {
@@ -10,6 +11,7 @@ const ForgotPassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,7 +57,7 @@ const ForgotPassword = () => {
             <label className="label" htmlFor="password">New Password</label>
             <input
               className="input"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="password"
               name="password"
               value={password}
@@ -63,13 +65,27 @@ const ForgotPassword = () => {
               placeholder="Enter new password"
               required
             />
+            <span
+              onClick={() => setShowPassword((prev) => !prev)}
+              style={{
+                position: "absolute",
+                right: "10px",
+                top: "30px",
+                cursor: "pointer",
+                userSelect: "none"
+              }}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              tabIndex={0}
+            >
+              {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+            </span>
           </div>
 
           <div className="form-group">
             <label className="label" htmlFor="confirmPassword">Confirm Password</label>
             <input
               className="input"
-              type="password"
+              type={showPassword ? "text" : "password"}
               id="confirmPassword"
               name="confirmPassword"
               value={confirmPassword}

@@ -1,3 +1,7 @@
 node_modules
 .vercel
 .env
+
+../.vscode
+.DS_Store
+

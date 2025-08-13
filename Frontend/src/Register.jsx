@@ -3,6 +3,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate, Link } from "react-router-dom";
 import ContinueWithGoogle from "./components/ContinueWithGoogle";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Auth.css";
 
 const Register = () => {
@@ -22,6 +23,7 @@ const Register = () => {
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otp, setOtp] = useState("");
   const [otpTimer, setOtpTimer] = useState(300);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -61,39 +63,6 @@ const Register = () => {
       [name]: value,
     }));
   };
-
-  // Handler for form submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setIsSuccess(false); // reset success if any
-
-  //   try {
-  //     const response = await fetch(`${BASE_URL}/user/register`, {
-  //       method: "POST",
-  //       body: JSON.stringify(formData),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (data.error) {
-  //       // Show error below the email field (e.g., "Email already exists")
-  //       setServerError(data.error);
-  //     } else {
-  //       // Registration success
-  //       setIsSuccess(true);
-  //       setTimeout(() => {
-  //         navigate("/login");
-  //       }, 1000);
-  //     }
-  //   } catch (error) {
-  //     // In case fetch fails
-  //     console.error("Error:", error);
-  //     setServerError("Something went wrong. Please try again.");
-  //   }
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -261,7 +230,7 @@ const Register = () => {
           </label>
           <input
             className="input"
-            type="password"
+            type={showPassword ? "text" : "password"}
             id="password"
             name="password"
             value={formData.password}
@@ -269,6 +238,20 @@ const Register = () => {
             placeholder="Enter your password"
             required
           />
+          <span
+            onClick={() => setShowPassword((prev) => !prev)}
+            style={{
+              position: "absolute",
+              right: "10px",
+              top: "30px",
+              cursor: "pointer",
+              userSelect: "none"
+            }}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            tabIndex={0}
+          >
+            {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+          </span>
         </div>
 
         <button

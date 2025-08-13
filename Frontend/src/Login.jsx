@@ -3,6 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate, Link } from "react-router-dom";
 import ContinueWithGoogle from "./components/ContinueWithGoogle";
+import {FaEye, FaEyeSlash} from "react-icons/fa";
 import "./Auth.css";
 
 const Login = () => {
@@ -12,6 +13,8 @@ const Login = () => {
     email: "jaimin@gmail.com",
     password: "xyza",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -78,7 +81,7 @@ const Login = () => {
           </label>
           <input
             className="input"
-            type="password"
+            type={showPassword ? "text" : "password"}
             id="password"
             name="password"
             value={formData.password}
@@ -86,6 +89,20 @@ const Login = () => {
             placeholder="Enter your password"
             required
           />
+          <span
+            onClick={() => setShowPassword((prev) => !prev)}
+            style={{
+              position: "absolute",
+              right: "10px",
+              top: "30px",
+              cursor: "pointer",
+              userSelect: "none"
+            }}
+            aria-label={showPassword ? "Hide password" : "Show password"}
+            tabIndex={0}
+          >
+            {showPassword ? <FaEyeSlash size={18} /> : <FaEye size={18} />}
+          </span>
         </div>
 
         <div className="reset-password-wrapper">
